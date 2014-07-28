@@ -296,21 +296,33 @@ static void print_core_prstatus(elf_info_t *elf_info)
 
   if (elf_info->e_machine == 0x3) // x86_32
   {
-    printf("       GS: %08x   FS: %08x   ES: %08x   DS: %08x\n",
-      (uint32_t)elf_info->read_int32(elf_info),
-      (uint32_t)elf_info->read_int32(elf_info),
-      (uint32_t)elf_info->read_int32(elf_info),
-      (uint32_t)elf_info->read_int32(elf_info));
-    printf("      EDI: %08x  ESI: %08x  EBP: %08x  ESP: %08x\n",
-      (uint32_t)elf_info->read_int32(elf_info),
-      (uint32_t)elf_info->read_int32(elf_info),
-      (uint32_t)elf_info->read_int32(elf_info),
-      (uint32_t)elf_info->read_int32(elf_info));
-    printf("      EBX: %08x  EDX: %08x  ECX: %08x  EAX: %08x\n",
-      (uint32_t)elf_info->read_int32(elf_info),
-      (uint32_t)elf_info->read_int32(elf_info),
-      (uint32_t)elf_info->read_int32(elf_info),
-      (uint32_t)elf_info->read_int32(elf_info));
+    uint32_t ebx = (uint32_t)elf_info->read_int32(elf_info);
+    uint32_t ecx = (uint32_t)elf_info->read_int32(elf_info);
+    uint32_t edx = (uint32_t)elf_info->read_int32(elf_info);
+    uint32_t esi = (uint32_t)elf_info->read_int32(elf_info);
+    uint32_t edi = (uint32_t)elf_info->read_int32(elf_info);
+    uint32_t ebp = (uint32_t)elf_info->read_int32(elf_info);
+    uint32_t eax = (uint32_t)elf_info->read_int32(elf_info);
+    uint32_t xds = (uint32_t)elf_info->read_int32(elf_info);
+    uint32_t xes = (uint32_t)elf_info->read_int32(elf_info);
+    uint32_t xfs = (uint32_t)elf_info->read_int32(elf_info);
+    uint32_t xgs = (uint32_t)elf_info->read_int32(elf_info);
+    uint32_t orig_eax = (uint32_t)elf_info->read_int32(elf_info);
+    uint32_t eip = (uint32_t)elf_info->read_int32(elf_info);
+    uint32_t xcs = (uint32_t)elf_info->read_int32(elf_info);
+    uint32_t eflags = (uint32_t)elf_info->read_int32(elf_info);
+    uint32_t esp = (uint32_t)elf_info->read_int32(elf_info);
+    uint32_t xss = (uint32_t)elf_info->read_int32(elf_info);
+
+    printf("      EBX: %08x  ECX: %08x    EDX: %08x  ESI: %08x\n",
+      ebx, ecx, edx, esi);
+    printf("      EDI: %08x  EBP: %08x    EAX: %08x  XDS: %08x\n",
+      edi, ebp, eax, xds);
+    printf("      XES: %08x  XFS: %08x    XGS: %08x  ORIG_EAX: %08x\n",
+      xes, xfs, xgs, orig_eax);
+    printf("      EIP: %08x  XCS: %08x EFLAGS: %08x  ESP: %08x\n",
+      eip, xcs, eflags, esp);
+    printf("      XSS: %08x\n", xss);
   }
   else if (elf_info->e_machine == 0x3e) // x86_64
   {
