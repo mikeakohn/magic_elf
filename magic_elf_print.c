@@ -354,7 +354,6 @@ static void print_core_prstatus(elf_info_t *elf_info)
     uint64_t fs = (uint64_t)elf_info->read_int64(elf_info);
     uint64_t gs = (uint64_t)elf_info->read_int64(elf_info);
 
-#if 1
     printf("      R15: %016lx     R14: %016lx   R13: %016lx\n",
       r15, r14, r13);
     printf("      R12: %016lx     RBP: %016lx   RBX: %016lx\n",
@@ -373,7 +372,6 @@ static void print_core_prstatus(elf_info_t *elf_info)
       fs_base, gs_base, ds);
     printf("       ES: %016lx      FS: %016lx    GS: %016lx\n",
       es, fs, gs);
-#endif
   }
   else
   {
@@ -455,19 +453,34 @@ static void print_core_mapped_files(elf_info_t *elf_info, int len)
   elf_info->file_ptr = marker;
 }
 
+const char *get_program_header_type(int type)
+{
+  const char *types[] =
+  {
+    "NULL", "LOAD", "DYNAMIC", "INTERP", "NOTE", "SHLIB", "PHDR", "TLS", "NUM"
+  };
+
+  if (type <= 8)
+  {
+    return types[type];
+  }
+
+  if (type == 0x6474e550) { return "GNU_EH_FRAME"; }
+  if (type == 0x6474e551) { return "GNU_STACK"; }
+  if (type == 0x6474e552) { return "GNU_RELRO"; }
+
+  return "UNKNOWN";
+}
+
 void print_elf_program_headers(elf_info_t *elf_info)
 {
 int count;
 long marker;
-unsigned int p_type,type_index;
+unsigned int p_type;
 int p_flags;
 int namesz,descsz,type;
 long p_offset,p_filesz;
 int n;
-const char *types[] =
-{
-  "NULL", "LOAD", "DYNAMIC", "INTERP", "NOTE", "SHLIB", "PHDR", "UNKNOWN"
-};
 const char *flags[] =
 {
   "---", "--X", "-W-", "-WX", "R--", "R-X", "RW-", "RWX"
@@ -487,8 +500,7 @@ const char *flags[] =
     if (elf_info->bitwidth == 32)
     {
       p_type = elf_info->read_word(elf_info);
-      type_index = p_type < 7 ? p_type : 7;
-      printf("  p_type: %d (%s)\n", p_type, types[type_index]);
+      printf("  p_type: %d (%s)\n", p_type, get_program_header_type(p_type));
       p_offset = elf_info->read_offset(elf_info);
       printf("p_offset: 0x%lx\n", p_offset);
       printf(" p_vaddr: 0x%lx\n", elf_info->read_addr(elf_info));
@@ -507,8 +519,7 @@ const char *flags[] =
       p_type = elf_info->read_word(elf_info);
       p_flags = elf_info->read_word(elf_info);
       p_offset = elf_info->read_offset(elf_info);
-      type_index = p_type < 7 ? p_type : 7;
-      printf("  p_type: %d (%s)\n", p_type, types[type_index]);
+      printf("  p_type: %d (%s)\n", p_type, get_program_header_type(p_type));
       printf(" p_flags: %d %s%s%s\n", p_flags, flags[p_flags&7],
         (p_flags & 0xff0000) == 0xff0000 ? " MASKOS" : "",
         (p_flags & 0xff000000) == 0xff000000 ? " MASKPROC" : "");
@@ -521,7 +532,6 @@ const char *flags[] =
       printf(" p_align: 0x%lx\n", elf_info->read_xword(elf_info));
     }
 
-printf("p_type=%d\n", p_type);
     // If this is a NOTE section
     if (p_type == 4)
     {
@@ -536,6 +546,7 @@ printf("p_type=%d\n", p_type);
 
       while(bytes_used < p_filesz)
       {
+        //printf("bytes_used=%d / %ld\n", bytes_used, p_filesz);
         namesz = elf_info->read_word(elf_info);
         descsz = elf_info->read_word(elf_info);
         type = elf_info->read_word(elf_info);
@@ -562,11 +573,25 @@ printf("p_type=%d\n", p_type);
         // FIXME - There's a lot more things that can be put in here.
         // They will come back as unknown, but can be added as needed.
         printf("%8s 0x%04x  [0x%x ", name, descsz, type);
+
+        // FIXME - Um. When there is a GNU section I'm 4 bytes off.  Why?
+        if (strcmp(name, "GNU") == 0)
+        {
+          printf("]\n");
+          //printf("%lx\n", elf_info->file_ptr);
+          for (n = 0; n < descsz; n++) { printf("%c", elf_info->read_int8(elf_info)); }
+          printf("\n");
+          break;
+        }
+
+        int is_core = 0;
+        if (strcmp(name, "CORE") == 0) { is_core = 1; }
+
         switch(type)
         {
           case 1:
             printf("NT_PRSTATUS]\n");
-            print_core_prstatus(elf_info);
+            if (is_core) { print_core_prstatus(elf_info); }
             break;
           case 2:
             printf("NT_PRFPREG]\n");
@@ -574,14 +599,14 @@ printf("p_type=%d\n", p_type);
             break;
           case 3:
             printf("NT_PRPSINFO]\n");
-            print_core_prpsinfo(elf_info);
+            if (is_core) { print_core_prpsinfo(elf_info); }
             break;
           case 4: printf("NT_TASKSTRUCT]\n"); break;
           case 6: printf("NT_AUXV]\n"); break;
           case 0x200: printf("NT_386_TLS]\n"); break;
           case 0x53494749:
             printf("NT_SIGINFO]\n");
-            print_core_siginfo(elf_info);
+            if (is_core) { print_core_siginfo(elf_info); }
             break;
           case 0x46494c45:
             printf("NT_FILE]\n");
