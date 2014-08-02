@@ -260,6 +260,57 @@ static void print_core_regs(elf_info_t *elf_info)
 }
 #endif
 
+int find_program_header(elf_info_t *elf_info, uint64_t address)
+{
+  int count;
+  int program_header = -1;
+  long marker = elf_info->file_ptr;
+
+  //uint32_t p_type;
+  //uint32_t p_flags;
+  //uint64_t p_offset;
+  uint64_t p_vaddr;
+  //uint64_t p_paddr;
+  //uint64_t p_filesz;
+  uint64_t p_memsz;
+
+  for(count = 0; count < elf_info->e_phnum; count++)
+  {
+    elf_info->file_ptr = elf_info->e_phoff + (elf_info->e_phentsize * count);
+
+    if (elf_info->bitwidth == 32)
+    {
+      elf_info->read_word(elf_info); // p_type
+      elf_info->read_offset(elf_info); // p_offset
+      p_vaddr = elf_info->read_addr(elf_info);
+      elf_info->read_addr(elf_info); // p_addr
+      elf_info->read_word(elf_info); // p_filesz
+      p_memsz = elf_info->read_word(elf_info);
+    }
+    else
+    {
+      elf_info->read_word(elf_info); // p_type
+      elf_info->read_word(elf_info); // p_flags
+      elf_info->read_offset(elf_info); // p_offset
+      p_vaddr = elf_info->read_addr(elf_info);
+      elf_info->read_addr(elf_info); // p_addr
+      elf_info->read_xword(elf_info); // p_filesz
+      p_memsz = elf_info->read_xword(elf_info);
+    }
+
+    //printf("%d] %lx %lx %lx\n", count, address, p_vaddr, p_memsz);
+    if (address >= p_vaddr && address < p_vaddr + p_memsz)
+    {
+      program_header = count;
+      break;
+    }
+  }
+
+  elf_info->file_ptr = marker;
+
+  return program_header;
+}
+
 static void print_core_prstatus(elf_info_t *elf_info)
 {
   long marker = elf_info->file_ptr;
@@ -323,6 +374,13 @@ static void print_core_prstatus(elf_info_t *elf_info)
     printf("      EIP: %08x  XCS: %08x EFLAGS: %08x  ESP: %08x\n",
       eip, xcs, eflags, esp);
     printf("      XSS: %08x\n", xss);
+
+    int program_header = find_program_header(elf_info, eip);
+
+    if (program_header != -1)
+    {
+      printf("     <program header: %d>\n", program_header);
+    }
   }
   else if (elf_info->e_machine == 0x3e) // x86_64
   {
@@ -372,6 +430,13 @@ static void print_core_prstatus(elf_info_t *elf_info)
       fs_base, gs_base, ds);
     printf("       ES: %016lx      FS: %016lx    GS: %016lx\n",
       es, fs, gs);
+
+    int program_header = find_program_header(elf_info, rip);
+
+    if (program_header != -1)
+    {
+      printf("     <program header: %d>\n", program_header);
+    }
   }
   else
   {
