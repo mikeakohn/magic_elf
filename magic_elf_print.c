@@ -24,36 +24,36 @@
 
 void print_elf_header(elf_info_t *elf_info)
 {
-int t;
+  int t;
 
   printf("Elf Header\n");
   printf("---------------------------------------------\n");
   printf("    e_ident: ");
-  for (t=0; t<16; t++)
+  for (t = 0; t < 16; t++)
   {
-    printf("%02x ",elf_info->buffer[t]);
+    printf("%02x ", elf_info->buffer[t]);
   }
   printf("\n");
 
   printf("             EI_MAGIC=0x7f ELF\n");
   printf("             EI_CLASS=%d ",elf_info->buffer[4]);
-  if (elf_info->buffer[4]==1)
-  { printf("(32 bit)\n"); elf_info->bitwidth=32; }
+  if (elf_info->buffer[4] == 1)
+  { printf("(32 bit)\n"); elf_info->bitwidth = 32; }
     else
-  if (elf_info->buffer[4]==2)
-  { printf("(64 bit)\n"); elf_info->bitwidth=64; }
+  if (elf_info->buffer[4] == 2)
+  { printf("(64 bit)\n"); elf_info->bitwidth = 64; }
     else
-  { printf("(Invalid)\n"); elf_info->bitwidth=0; }
+  { printf("(Invalid)\n"); elf_info->bitwidth = 0; }
 
-  printf("             EI_DATA=%d ",elf_info->buffer[5]);
-  if (elf_info->buffer[5]==1)
+  printf("             EI_DATA=%d ", elf_info->buffer[5]);
+  if (elf_info->buffer[5] == 1)
   { printf("(Little Endian)\n"); }
     else
-  if (elf_info->buffer[5]==2)
+  if (elf_info->buffer[5] == 2)
   { printf("(Big Endian)\n"); }
 
-  printf("             EI_VERSION=%d\n",elf_info->buffer[6]);
-  printf("             EI_OSABI=%d ",elf_info->buffer[7]);
+  printf("             EI_VERSION=%d\n", elf_info->buffer[6]);
+  printf("             EI_OSABI=%d ", elf_info->buffer[7]);
 
   switch(elf_info->buffer[7])
   {
@@ -74,12 +74,12 @@ int t;
     default: printf("(Unknown)\n");
   }
 
-  printf("             EI_ABIVER=%d\n",elf_info->buffer[8]);
+  printf("             EI_ABIVER=%d\n", elf_info->buffer[8]);
 
-  elf_info->file_ptr=16;
+  elf_info->file_ptr = 16;
 
-  t=elf_info->read_half(elf_info);
-  printf("     e_type: %02x ",t);
+  t = elf_info->read_half(elf_info);
+  printf("     e_type: %02x ", t);
   switch(t)
   {
     case 0: { printf("(No type)\n"); break; }
@@ -95,7 +95,7 @@ int t;
   }
 
   elf_info->e_machine = elf_info->read_half(elf_info);
-  printf("  e_machine: 0x%x ",elf_info->e_machine);
+  printf("  e_machine: 0x%x ", elf_info->e_machine);
   switch(elf_info->e_machine)
   {
     case 0: { printf("(None)\n"); break; }
@@ -192,17 +192,17 @@ int t;
     default: printf("(Unknown)\n");
   }
 
-  printf("  e_version: %d\n",elf_info->read_word(elf_info));
-  printf("    e_entry: 0x%lx (virt addr)\n",elf_info->read_addr(elf_info));
-  printf("    e_phoff: 0x%lx (program header table offset)\n",elf_info->read_offset(elf_info));
-  printf("    e_shoff: 0x%lx (section header table offset)\n",elf_info->read_offset(elf_info));
-  printf("    e_flags: 0x%08x (processor specific flags)\n",elf_info->read_word(elf_info));
-  printf("   e_ehsize: 0x%08x (elf header size)\n",elf_info->read_half(elf_info));
-  printf("e_phentsize: %d (program header table size)\n",elf_info->read_half(elf_info));
-  printf("    e_phnum: %d (program header table count)\n",elf_info->read_half(elf_info));
-  printf("e_shentsize: %d (section header size)\n",elf_info->read_half(elf_info));
-  printf("    e_shnum: %d (section header count)\n",elf_info->read_half(elf_info));
-  printf(" e_shstrndx: %d (section header string table index)\n",elf_info->read_half(elf_info));
+  printf("  e_version: %d\n", elf_info->read_word(elf_info));
+  printf("    e_entry: 0x%lx (virt addr)\n", elf_info->read_addr(elf_info));
+  printf("    e_phoff: 0x%lx (program header table offset)\n", elf_info->read_offset(elf_info));
+  printf("    e_shoff: 0x%lx (section header table offset)\n", elf_info->read_offset(elf_info));
+  printf("    e_flags: 0x%08x (processor specific flags)\n", elf_info->read_word(elf_info));
+  printf("   e_ehsize: 0x%08x (elf header size)\n", elf_info->read_half(elf_info));
+  printf("e_phentsize: %d (program header table size)\n", elf_info->read_half(elf_info));
+  printf("    e_phnum: %d (program header table count)\n", elf_info->read_half(elf_info));
+  printf("e_shentsize: %d (section header size)\n", elf_info->read_half(elf_info));
+  printf("    e_shnum: %d (section header count)\n", elf_info->read_half(elf_info));
+  printf(" e_shstrndx: %d (section header string table index)\n", elf_info->read_half(elf_info));
 
   printf("\n");
 }
@@ -698,9 +698,9 @@ const char *flags[] =
 static void print_elf_comment(unsigned char *comment, int sh_size)
 {
   int n;
-  for (n=0; n<sh_size; n++)
+  for (n = 0; n < sh_size; n++)
   {
-    if (comment[n]>=32 && comment[n]<127)
+    if (comment[n] >= 32 && comment[n] < 127)
     { printf("%c", comment[n]); }
       else
     { printf("[%02x]", comment[n]); }
@@ -711,18 +711,18 @@ static void print_elf_comment(unsigned char *comment, int sh_size)
 static void print_elf_symtab_32(elf_info_t *elf_info, int offset, int sh_size, int sh_entsize, int strtab_offset)
 {
   int n;
-  char *strtab=(char *)elf_info->buffer+strtab_offset;
-  for (n=0; n<sh_size; n=n+sh_entsize)
+  char *strtab = (char *)elf_info->buffer + strtab_offset;
+  for (n = 0; n < sh_size; n = n + sh_entsize)
   {
-    strtab_offset=elf_info->get_word(elf_info, offset+n);
+    strtab_offset = elf_info->get_word(elf_info, offset+n);
     printf("   %-30s [%d] 0x%lx %d %d %d %d\n",
-      strtab+strtab_offset,
+      strtab + strtab_offset,
       strtab_offset,
-      elf_info->get_addr(elf_info, offset+n+4),
-      elf_info->get_word(elf_info, offset+n+8),
-      *(elf_info->buffer+offset+n+12),
-      *(elf_info->buffer+offset+n+13),
-      elf_info->get_half(elf_info, offset+n+14)
+      elf_info->get_addr(elf_info, offset + n + 4),
+      elf_info->get_word(elf_info, offset + n + 8),
+      *(elf_info->buffer + offset + n + 12),
+      *(elf_info->buffer + offset + n + 13),
+      elf_info->get_half(elf_info, offset + n + 14)
     );
   }
   printf("\n\n");
@@ -731,18 +731,18 @@ static void print_elf_symtab_32(elf_info_t *elf_info, int offset, int sh_size, i
 static void print_elf_symtab_64(elf_info_t *elf_info, int offset, int sh_size, int sh_entsize, int strtab_offset)
 {
   int n;
-  char *strtab=(char *)elf_info->buffer+strtab_offset;
-  for (n=0; n<sh_size; n=n+sh_entsize)
+  char *strtab = (char *)elf_info->buffer + strtab_offset;
+  for (n = 0; n < sh_size; n = n + sh_entsize)
   {
-    strtab_offset=elf_info->get_word(elf_info, offset+n);
+    strtab_offset = elf_info->get_word(elf_info, offset+n);
     printf("%-30s [%d] 0x%lx %ld %d %d %d\n",
-      strtab+strtab_offset,
+      strtab + strtab_offset,
       strtab_offset,
-      elf_info->get_addr(elf_info, offset+n+8),
-      elf_info->get_xword(elf_info, offset+n+16),
-      *(elf_info->buffer+offset+n+4),
-      *(elf_info->buffer+offset+n+5),
-      elf_info->get_half(elf_info, offset+n+6)
+      elf_info->get_addr(elf_info, offset + n + 8),
+      elf_info->get_xword(elf_info, offset + n + 16),
+      *(elf_info->buffer+offset + n + 4),
+      *(elf_info->buffer+offset + n + 5),
+      elf_info->get_half(elf_info, offset + n + 6)
     );
   }
   printf("\n\n");
@@ -750,18 +750,18 @@ static void print_elf_symtab_64(elf_info_t *elf_info, int offset, int sh_size, i
 
 static void print_elf_string_table(unsigned char *table, int sh_size)
 {
-  int index=0;
-  int len=0;
+  int index = 0;
+  int len = 0;
   int n;
 
-  for (n=0; n<sh_size; n++)
+  for (n = 0; n < sh_size; n++)
   {
-    if (len==0) { printf("\n   [%d] %d: ", n, index++); }
-    if (table[n]>=32 && table[n]<127)
+    if (len == 0) { printf("\n   [%d] %d: ", n, index++); }
+    if (table[n] >= 32 && table[n] < 127)
     { printf("%c", table[n]); }
       else
     {
-      if (table[n]==0) { len=0; continue; }
+      if (table[n] == 0) { len = 0; continue; }
       printf("[%02x]", table[n]);
     }
 
@@ -811,64 +811,64 @@ int n;
 
 static void print_elf_arm_attrs(unsigned char *attrs, int sh_size)
 {
-int n;
-char text[17];
-int ptr;
+  int n;
+  char text[17];
+  int ptr;
 
-  ptr=0;
+  ptr = 0;
 
-  for (n=0; n<sh_size; n++)
+  for (n = 0; n < sh_size; n++)
   {
-    if (n%16==0)
+    if ((n % 16) == 0)
     {
-      if (ptr!=0) { text[ptr]=0; printf("  %s", text); ptr=0; }
+      if (ptr != 0) { text[ptr] = 0; printf("  %s", text); ptr = 0; }
       printf("\n");
     }
     printf(" %02x", attrs[n]);
-    if (attrs[n]>=48 && attrs[n]<120) { text[ptr++]=attrs[n]; }
-    else { text[ptr++]='.'; }
+    if (attrs[n] >= 48 && attrs[n] < 120) { text[ptr++] = attrs[n]; }
+    else { text[ptr++] = '.'; }
   }
 
-  text[ptr]=0;
+  text[ptr] = 0;
   printf("  %s\n\n", text);
-  //int pos=6+strlen((char *)attrs+5);
+  //int pos = 6 + strlen((char *)attrs + 5);
 
   printf("   Version: %c\n", attrs[0]);
-  printf("      Size: %d\n", attrs[1]|(attrs[2]<<8)|(attrs[3]<<16)|(attrs[4]<<24));
+  printf("      Size: %d\n", attrs[1] | (attrs[2] << 8) | (attrs[3] << 16) | (attrs[4] << 24));
   printf("VendorName: %s\n", attrs+5);
   printf("\n");
 }
 
 void print_elf_section_headers(elf_info_t *elf_info)
 {
-int count;
-int t;
-long i;
-long marker;
+  int count;
+  int t;
+  long i;
+  long marker;
 
-  elf_info->file_ptr=elf_info->e_shoff;
+  elf_info->file_ptr = elf_info->e_shoff;
 
-  printf("Elf Section Headers (count=%d)\n\n",elf_info->e_shnum);
+  printf("Elf Section Headers (count=%d)\n\n", elf_info->e_shnum);
 
-  for(count=0; count<elf_info->e_shnum; count++)
+  for(count = 0; count<elf_info->e_shnum; count++)
   {
-    marker=elf_info->file_ptr+elf_info->e_shentsize;
+    marker = elf_info->file_ptr+elf_info->e_shentsize;
 
-    printf("Section Header %d\n",count);
+    printf("Section Header %d\n", count);
     printf("---------------------------------------------\n");
 
-    t=elf_info->read_word(elf_info);
-    printf("     sh_name: %d",t);
-    char *section_name=NULL;
-    if (t!=0)
+    t = elf_info->read_word(elf_info);
+    printf("     sh_name: %d", t);
+    char *section_name = NULL;
+    if (t != 0)
     {
-      section_name=(char *)(elf_info->buffer+elf_info->str_tbl_offset+t);
-      printf(" (%s)\n",section_name);
+      section_name = (char *)(elf_info->buffer + elf_info->str_tbl_offset + t);
+      printf(" (%s)\n", section_name);
     }
       else
     { printf("\n"); }
 
-    int sh_type=elf_info->read_word(elf_info);
+    int sh_type = elf_info->read_word(elf_info);
     printf("     sh_type: %d ", sh_type);
 
     switch(sh_type)
@@ -899,79 +899,79 @@ long marker;
       default: printf("(Unknown)\n");
     }
 
-    i=elf_info->read_xword(elf_info);
-    printf("    sh_flags: 0x%lx (",i);
+    i = elf_info->read_xword(elf_info);
+    printf("    sh_flags: 0x%lx (", i);
 
-    if ((i&0x1)!=0) { printf("SHF_WRITE "); }
-    if ((i&0x2)!=0) { printf("SHF_ALLOC "); }
-    if ((i&0x4)!=0) { printf("SHF_EXECINSTR "); }
-    if ((i&0x10)!=0) { printf("SHF_MERGE "); }
-    if ((i&0x20)!=0) { printf("SHF_STRINGS "); }
-    if ((i&0x40)!=0) { printf("SHF_INFO_LINK "); }
-    if ((i&0x80)!=0) { printf("SHF_LINK_ORDER "); }
-    if ((i&0x100)!=0) { printf("SHF_OS_NONCONFORMING "); }
-    if ((i&0x200)!=0) { printf("SHF_GROUP "); }
-    if ((i&0x400)!=0) { printf("SHF_TLS "); }
-    if ((i&0xff00000)!=0) { printf("SHF_MASKOS "); }
-    if ((i&0xf0000000)!=0) { printf("SHF_MASKPROC "); }
+    if ((i & 0x1) != 0) { printf("SHF_WRITE "); }
+    if ((i & 0x2) != 0) { printf("SHF_ALLOC "); }
+    if ((i & 0x4) != 0) { printf("SHF_EXECINSTR "); }
+    if ((i & 0x10) != 0) { printf("SHF_MERGE "); }
+    if ((i & 0x20) != 0) { printf("SHF_STRINGS "); }
+    if ((i & 0x40) != 0) { printf("SHF_INFO_LINK "); }
+    if ((i & 0x80) != 0) { printf("SHF_LINK_ORDER "); }
+    if ((i & 0x100) != 0) { printf("SHF_OS_NONCONFORMING "); }
+    if ((i & 0x200) != 0) { printf("SHF_GROUP "); }
+    if ((i & 0x400) != 0) { printf("SHF_TLS "); }
+    if ((i & 0xff00000) != 0) { printf("SHF_MASKOS "); }
+    if ((i & 0xf0000000) != 0) { printf("SHF_MASKPROC "); }
     printf(")\n");
 
-    printf("     sh_addr: 0x%lx\n",elf_info->read_addr(elf_info));
-    long sh_offset=elf_info->read_offset(elf_info);
-    long sh_size=elf_info->read_xword(elf_info);
-    printf("   sh_offset: 0x%lx\n",sh_offset);
-    printf("     sh_size: %ld\n",sh_size);
-    printf("     sh_link: %d\n",elf_info->read_word(elf_info));
-    printf("     sh_info: %d\n",elf_info->read_word(elf_info));
-    printf("sh_addralign: %ld\n",elf_info->read_xword(elf_info));
-    long sh_entsize=elf_info->read_xword(elf_info);
-    printf("  sh_entsize: %ld\n",sh_entsize);
+    printf("     sh_addr: 0x%lx\n", elf_info->read_addr(elf_info));
+    long sh_offset = elf_info->read_offset(elf_info);
+    long sh_size = elf_info->read_xword(elf_info);
+    printf("   sh_offset: 0x%lx\n", sh_offset);
+    printf("     sh_size: %ld\n", sh_size);
+    printf("     sh_link: %d\n", elf_info->read_word(elf_info));
+    printf("     sh_info: %d\n", elf_info->read_word(elf_info));
+    printf("sh_addralign: %ld\n", elf_info->read_xword(elf_info));
+    long sh_entsize = elf_info->read_xword(elf_info);
+    printf("  sh_entsize: %ld\n", sh_entsize);
     printf("\n");
 
-    if (section_name!=NULL)
+    if (section_name != NULL)
     {
-      if (strcmp(".comment", section_name)==0)
+      if (strcmp(".comment", section_name) == 0)
       {
-        print_elf_comment(elf_info->buffer+sh_offset, sh_size);
+        print_elf_comment(elf_info->buffer + sh_offset, sh_size);
       }
         else
-      if (strcmp(".strtab", section_name)==0 || sh_type==3)
-      {
-        print_elf_string_table(elf_info->buffer+sh_offset, sh_size);
-      }
-        else
-      if (strcmp(".shstrtab", section_name)==0)
+      if (strcmp(".strtab", section_name) == 0 || sh_type == 3)
       {
         print_elf_string_table(elf_info->buffer+sh_offset, sh_size);
       }
         else
-      if (strcmp(".symtab", section_name)==0)
+      if (strcmp(".shstrtab", section_name) == 0)
+      {
+        print_elf_string_table(elf_info->buffer + sh_offset, sh_size);
+      }
+        else
+      if (strcmp(".symtab", section_name) == 0)
       {
         int strtab_offset = find_section_offset(elf_info, SHT_STRTAB, ".strtab", NULL);
-        if (elf_info->bitwidth==32)
+        if (elf_info->bitwidth == 32)
         { print_elf_symtab_32(elf_info, sh_offset, sh_size, sh_entsize, strtab_offset); }
           else
-        if (elf_info->bitwidth==64)
+        if (elf_info->bitwidth == 64)
         { print_elf_symtab_64(elf_info, sh_offset, sh_size, sh_entsize, strtab_offset); }
       }
         else
-      if (strcmp(".dynsym", section_name)==0)
+      if (strcmp(".dynsym", section_name) == 0)
       {
         int strtab_offset = find_section_offset(elf_info, SHT_STRTAB, ".dynstr", NULL);
-        if (elf_info->bitwidth==32)
+        if (elf_info->bitwidth == 32)
         { print_elf_symtab_32(elf_info, sh_offset, sh_size, sh_entsize, strtab_offset); }
           else
-        if (elf_info->bitwidth==64)
+        if (elf_info->bitwidth == 64)
         { print_elf_symtab_64(elf_info, sh_offset, sh_size, sh_entsize, strtab_offset); }
       }
         else
-      if (strcmp(".ARM.attributes", section_name)==0 || sh_type==3)
+      if (strcmp(".ARM.attributes", section_name) == 0 || sh_type == 3)
       {
         print_elf_arm_attrs(elf_info->buffer+sh_offset, sh_size);
       }
 #if 0
         else
-      if (strcmp(".dynamic", section_name)==0)
+      if (strcmp(".dynamic", section_name) == 0)
       {
         print_elf_dynamic(elf_info, sh_offset, sh_size);
       }
@@ -979,14 +979,14 @@ long marker;
     }
 
 /*
-if (elf_info->file_ptr!=marker)
+if (elf_info->file_ptr != marker)
 {
-  printf("%ld %ld\n",elf_info->file_ptr,marker+elf_info->e_shentsize);
+  printf("%ld %ld\n", elf_info->file_ptr,marker + elf_info->e_shentsize);
 exit(0);
 }
 */
 
-    elf_info->file_ptr=marker;
+    elf_info->file_ptr = marker;
   }
 }
 

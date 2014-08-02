@@ -23,15 +23,14 @@
 
 int main(int argc, char *argv[])
 {
-elf_info_t *elf_info;
-char *filename=NULL;
-char *function_name=NULL;
-char *symbol_name=NULL;
-uint64_t ret_value=0;
-long file_offset=0;
-int bits=0;
-
-int r;
+  elf_info_t *elf_info;
+  char *filename = NULL;
+  char *function_name = NULL;
+  char *symbol_name = NULL;
+  uint64_t ret_value = 0;
+  long file_offset = 0;
+  int bits = 0;
+  int r;
 
   printf("\nmagic_elf - Copyright 2009-2014 by Michael Kohn <mike@mikekohn.net>\n");
   printf("http://www.mikekohn.net/\n");
@@ -45,83 +44,84 @@ int r;
     exit(0);
   }
 
-  for (r=1; r<argc; r++)
+  for (r = 1; r < argc; r++)
   {
-    if (strcmp(argv[r],"-modify")==0)
+    if (strcmp(argv[r],"-modify") == 0)
     {
-      if (r+2>=argc)
+      if (r + 2 >= argc)
       { printf("Error: -modify requires 2 arguments\n"); exit(1); }
 
-      function_name=argv[r+1];
-      ret_value=atol(argv[r+2]);
-      r+=2;
+      function_name = argv[r + 1];
+      ret_value = atol(argv[r + 2]);
+      r += 2;
     }
       else
-    if (strcmp(argv[r],"-show")==0)
+    if (strcmp(argv[r],"-show") == 0)
     {
-      if (r+1>=argc)
+      if (r + 1 >= argc)
       { printf("Error: -show requires 1 arguments\n"); exit(1); }
 
-      symbol_name=argv[r+1];
+      symbol_name = argv[r+1];
       r++;
     }
       else
-    if (argv[r][0]=='-')
+    if (argv[r][0] == '-')
     {
-      printf("Unknown option '%s'\n",argv[r]);
+      printf("Unknown option '%s'\n", argv[r]);
       exit(1);
     }
       else
     {
-      filename=argv[r];
+      filename = argv[r];
     }
   }
 
-  elf_info=open_elf(filename);
-  if (elf_info==0)
+  elf_info = open_elf(filename);
+  if (elf_info == 0)
   {
     printf("Couldn't open file or not an elf\n");
     exit(0);
   }
 
 
-  if (symbol_name==NULL && function_name==NULL)
+  if (symbol_name == NULL && function_name == NULL)
   {
     print_elf_header(elf_info);
     print_elf_program_headers(elf_info);
     print_elf_section_headers(elf_info);
   }
 
-  if (function_name!=NULL)
+  if (function_name != NULL)
   {
-    file_offset=find_symbol_offset(elf_info,function_name);
-    if (file_offset==-1)
+    file_offset = find_symbol_offset(elf_info, function_name);
+    if (file_offset == -1)
     {
-      printf("Error: Can't find function '%s'.\n",function_name);
+      printf("Error: Can't find function '%s'.\n", function_name);
     }
       else
     {
-      bits=0;
+      bits = 0;
     }
 
-    if (elf_info->buffer[4]==1)
-    { bits=32; }
+    if (elf_info->buffer[4] == 1)
+    { bits = 32; }
       else
-    if (elf_info->buffer[4]==2)
-    { bits=64; }
+    if (elf_info->buffer[4] == 2)
+    { bits = 64; }
   }
 
-  if (symbol_name!=NULL)
+  if (symbol_name != NULL)
   {
     file_offset=find_symbol_offset(elf_info,symbol_name);
-    if (file_offset==-1)
+    if (file_offset == -1)
     {
-      printf("Error: Can't find symbol '%s'.\n",symbol_name);
-      function_name=NULL;
+      printf("Error: Can't find symbol '%s'.\n", symbol_name);
+      function_name = NULL;
     }
       else
     {
-      printf("%s=%s\n", symbol_name, elf_info->buffer+address_to_offset(elf_info, elf_info->get_addr(elf_info, file_offset)));
+      printf("%s=%s\n", symbol_name,
+         elf_info->buffer + address_to_offset(elf_info, elf_info->get_addr(elf_info, file_offset)));
     }
   }
 
@@ -129,33 +129,33 @@ int r;
 
   close_elf(&elf_info);
 
-  if (function_name!=NULL)
+  if (function_name != NULL)
   {
-    FILE *fp=fopen(filename, "rb+");
+    FILE *fp = fopen(filename, "rb+");
     fseek(fp, file_offset, SEEK_SET);
-    if (bits==64)
+    if (bits == 64)
     {
-      putc(0x48,fp);
-      putc(0xb8,fp);
-      putc(ret_value&0xff,fp);
-      putc((ret_value>>8)&0xff,fp);
-      putc((ret_value>>16)&0xff,fp);
-      putc((ret_value>>24)&0xff,fp);
-      putc((ret_value>>32)&0xff,fp);
-      putc((ret_value>>40)&0xff,fp);
-      putc((ret_value>>48)&0xff,fp);
-      putc((ret_value>>56)&0xff,fp);
-      putc(0xc3,fp);
+      putc(0x48, fp);
+      putc(0xb8, fp);
+      putc(ret_value & 0xff, fp);
+      putc((ret_value >> 8) & 0xff, fp);
+      putc((ret_value >> 16) & 0xff, fp);
+      putc((ret_value >> 24) & 0xff, fp);
+      putc((ret_value >> 32) & 0xff, fp);
+      putc((ret_value >> 40) & 0xff, fp);
+      putc((ret_value >> 48) & 0xff, fp);
+      putc((ret_value >> 56) & 0xff, fp);
+      putc(0xc3, fp);
     }
       else
-    if (bits==32)
+    if (bits == 32)
     {
-      putc(0xb8,fp);
-      putc(ret_value&0xff,fp);
-      putc((ret_value>>8)&0xff,fp);
-      putc((ret_value>>16)&0xff,fp);
-      putc((ret_value>>24)&0xff,fp);
-      putc(0xc3,fp);
+      putc(0xb8, fp);
+      putc(ret_value & 0xff, fp);
+      putc((ret_value >> 8) & 0xff, fp);
+      putc((ret_value >> 16) & 0xff, fp);
+      putc((ret_value >> 24) & 0xff, fp);
+      putc(0xc3, fp);
     }
     fclose(fp);
 

@@ -28,41 +28,41 @@
 
 void *find_symbol_address(elf_info_t *elf_info, const char *symbol_name)
 {
-unsigned long offset,offset_end;
-unsigned int t;
+  unsigned long offset, offset_end;
+  unsigned int t;
 
-  offset=elf_info->sym_tbl_offset;
-  offset_end=offset+elf_info->sym_tbl_len;
+  offset = elf_info->sym_tbl_offset;
+  offset_end = offset+elf_info->sym_tbl_len;
 
 /*
 printf("offset=%lx\n",elf_info->str_sym_tbl_offset);
 printf("offset=%lx\n",elf_info->str_tbl_offset);
 */
 
-  if (elf_info->buffer[4]==1) /* 32 bit */
+  if (elf_info->buffer[4] == 1) /* 32 bit */
   {
-    while(offset<offset_end)
+    while(offset < offset_end)
     {
-      t=elf_info->get_word(elf_info, offset);
+      t = elf_info->get_word(elf_info, offset);
 
-      if (t!=0 && strcmp(symbol_name,(char *)elf_info->buffer+elf_info->str_sym_tbl_offset+t)==0)
+      if (t != 0 && strcmp(symbol_name, (char *)elf_info->buffer + elf_info->str_sym_tbl_offset + t) == 0)
       {
-        return elf_info->buffer+elf_info->get_addr(elf_info,offset+4);
+        return elf_info->buffer + elf_info->get_addr(elf_info,offset + 4);
       }
-      offset+=16;
+      offset += 16;
     }
   }
     else
   {
-    while(offset<offset_end)
+    while(offset < offset_end)
     {
-      t=elf_info->get_word(elf_info, offset);
+      t = elf_info->get_word(elf_info, offset);
 
-      if (t!=0 && strcmp(symbol_name,(char *)elf_info->buffer+elf_info->str_sym_tbl_offset+t)==0)
+      if (t != 0 && strcmp(symbol_name, (char *)elf_info->buffer + elf_info->str_sym_tbl_offset + t) == 0)
       {
-        return elf_info->buffer+elf_info->get_addr(elf_info,offset+8);
+        return elf_info->buffer + elf_info->get_addr(elf_info, offset + 8);
       }
-      offset+=24;
+      offset += 24;
     }
   }
 
@@ -71,33 +71,33 @@ printf("offset=%lx\n",elf_info->str_tbl_offset);
 
 long address_to_offset(elf_info_t *elf_info, long address)
 {
-  unsigned long offset=elf_info->e_shoff;
+  unsigned long offset = elf_info->e_shoff;
   unsigned long sh_address;
   unsigned long sh_size;
   int count;
 
-  for (count=0; count<elf_info->e_shnum; count++)
+  for (count = 0; count < elf_info->e_shnum; count++)
   {
-    if (elf_info->buffer[4]==1) /* 32 bit */
+    if (elf_info->buffer[4] == 1) /* 32 bit */
     {
-      sh_address=elf_info->get_addr(elf_info, offset+12);
-      sh_size=elf_info->get_addr(elf_info, offset+20);
-      if (address>=sh_address && address<sh_address+sh_size)
+      sh_address = elf_info->get_addr(elf_info, offset + 12);
+      sh_size = elf_info->get_addr(elf_info, offset + 20);
+      if (address >= sh_address && address < sh_address+sh_size)
       {
-        return elf_info->get_offset(elf_info, offset+16)+(address-sh_address);
+        return elf_info->get_offset(elf_info, offset + 16) + (address - sh_address);
       }
     }
       else
     {
-      sh_address=elf_info->get_addr(elf_info, offset+16);
-      sh_size=elf_info->get_addr(elf_info, offset+32);
-      if (address>=sh_address && address<sh_address+sh_size)
+      sh_address = elf_info->get_addr(elf_info, offset + 16);
+      sh_size = elf_info->get_addr(elf_info, offset + 32);
+      if (address >= sh_address && address < sh_address + sh_size)
       {
-        return elf_info->get_offset(elf_info, offset+24)+(address-sh_address);
+        return elf_info->get_offset(elf_info, offset + 24) + (address - sh_address);
       }
     }
 
-    offset=offset+elf_info->e_shentsize;
+    offset += elf_info->e_shentsize;
   }
 
   return -1;
@@ -105,36 +105,36 @@ long address_to_offset(elf_info_t *elf_info, long address)
 
 long find_symbol_offset(elf_info_t *elf_info, const char *symbol_name)
 {
-unsigned long offset,offset_end;
+unsigned long offset, offset_end;
 unsigned int t;
 
-  offset=elf_info->sym_tbl_offset;
-  offset_end=offset+elf_info->sym_tbl_len;
+  offset = elf_info->sym_tbl_offset;
+  offset_end = offset + elf_info->sym_tbl_len;
 
-  if (elf_info->buffer[4]==1) /* 32 bit */
+  if (elf_info->buffer[4] == 1) /* 32 bit */
   {
-    while(offset<offset_end)
+    while(offset < offset_end)
     {
-      t=elf_info->get_word(elf_info, offset);
+      t = elf_info->get_word(elf_info, offset);
 
-      if (t!=0 && strcmp(symbol_name,(char *)elf_info->buffer+elf_info->str_sym_tbl_offset+t)==0)
+      if (t != 0 && strcmp(symbol_name, (char *)elf_info->buffer + elf_info->str_sym_tbl_offset + t) == 0)
       {
-        return address_to_offset(elf_info, elf_info->get_addr(elf_info,offset+4));
+        return address_to_offset(elf_info, elf_info->get_addr(elf_info, offset + 4));
       }
-      offset+=16;
+      offset += 16;
     }
   }
     else
   {
-    while(offset<offset_end)
+    while(offset < offset_end)
     {
-      t=elf_info->get_word(elf_info, offset);
+      t = elf_info->get_word(elf_info, offset);
 
-      if (t!=0 && strcmp(symbol_name,(char *)elf_info->buffer+elf_info->str_sym_tbl_offset+t)==0)
+      if (t != 0 && strcmp(symbol_name, (char *)elf_info->buffer + elf_info->str_sym_tbl_offset + t)==0)
       {
-        return address_to_offset(elf_info, elf_info->get_addr(elf_info,offset+8));
+        return address_to_offset(elf_info, elf_info->get_addr(elf_info, offset + 8));
       }
-      offset+=24;
+      offset += 24;
     }
   }
 
@@ -147,30 +147,30 @@ unsigned long offset;
 int count;
 int t;
 
-  if (len!=NULL) *len=0;
-  offset=elf_info->e_shoff;
+  if (len != NULL) { *len = 0; }
+  offset = elf_info->e_shoff;
 
-  for (count=0; count<elf_info->e_shnum; count++)
+  for (count = 0; count < elf_info->e_shnum; count++)
   {
-    if (elf_info->get_word(elf_info, offset+4)==section)
+    if (elf_info->get_word(elf_info, offset + 4) == section)
     {
-      t=elf_info->get_word(elf_info, offset);
-      if (sec_name==NULL || (t!=0 && strcmp(sec_name,(char *)elf_info->buffer+elf_info->str_tbl_offset+t)==0))
+      t = elf_info->get_word(elf_info, offset);
+      if (sec_name == NULL || (t != 0 && strcmp(sec_name, (char *)elf_info->buffer + elf_info->str_tbl_offset + t) == 0))
       {
-        if (elf_info->buffer[4]==1) /* 32 bit */
+        if (elf_info->buffer[4] == 1) /* 32 bit */
         {
-          if (len!=NULL) *len=elf_info->get_xword(elf_info, offset+20);
-          return elf_info->get_offset(elf_info, offset+16);
+          if (len != NULL) { *len = elf_info->get_xword(elf_info, offset + 20); }
+          return elf_info->get_offset(elf_info, offset + 16);
         }
           else
         {
-          if (len!=NULL) *len=elf_info->get_xword(elf_info, offset+32);
-          return elf_info->get_offset(elf_info, offset+24);
+          if (len != NULL) { *len=elf_info->get_xword(elf_info, offset + 32); }
+          return elf_info->get_offset(elf_info, offset + 24);
         }
       }
     }
 
-    offset=offset+elf_info->e_shentsize;
+    offset += elf_info->e_shentsize;
   }
 
   return 0;
@@ -178,9 +178,9 @@ int t;
 
 static int set_functs(elf_info_t *elf_info)
 {
-// int shdr_offset;
-int e_shstrndx;
-long len;
+  // int shdr_offset;
+  int e_shstrndx;
+  long len;
 
   if (elf_info->buffer[0] != 0x7f ||
       elf_info->buffer[1] != 'E' ||
@@ -246,29 +246,31 @@ long len;
   elf_info->get_xword = elf_info->get_addr;
   elf_info->read_int8 = (void *)read_int8;
 
-  if (elf_info->buffer[4]==1) /* 32 bit */
+  if (elf_info->buffer[4] == 1) /* 32 bit */
   {
-    elf_info->e_entry = elf_info->get_addr(elf_info, 8+16);
-    elf_info->e_phoff = elf_info->get_offset(elf_info, 12+16);
-    elf_info->e_shoff = elf_info->get_offset(elf_info, 16+16);
-    elf_info->e_phentsize = elf_info->get_half(elf_info, 26+16);
-    elf_info->e_phnum = elf_info->get_half(elf_info, 28+16);
-    elf_info->e_shentsize = elf_info->get_half(elf_info, 30+16);
-    elf_info->e_shnum = elf_info->get_half(elf_info, 32+16);
-    e_shstrndx=elf_info->get_half(elf_info, 34+16);
-    elf_info->str_tbl_offset = elf_info->get_offset(elf_info,elf_info->e_shoff+(e_shstrndx*elf_info->e_shentsize)+16);
+    elf_info->e_entry = elf_info->get_addr(elf_info, 8 + 16);
+    elf_info->e_phoff = elf_info->get_offset(elf_info, 12 + 16);
+    elf_info->e_shoff = elf_info->get_offset(elf_info, 16 + 16);
+    elf_info->e_phentsize = elf_info->get_half(elf_info, 26 + 16);
+    elf_info->e_phnum = elf_info->get_half(elf_info, 28 + 16);
+    elf_info->e_shentsize = elf_info->get_half(elf_info, 30 + 16);
+    elf_info->e_shnum = elf_info->get_half(elf_info, 32 + 16);
+    e_shstrndx=elf_info->get_half(elf_info, 34 + 16);
+    elf_info->str_tbl_offset =
+      elf_info->get_offset(elf_info, elf_info->e_shoff + (e_shstrndx * elf_info->e_shentsize) + 16);
   }
     else
   {
-    elf_info->e_entry = elf_info->get_addr(elf_info, 8+16);
-    elf_info->e_phoff = elf_info->get_offset(elf_info, 16+16);
-    elf_info->e_shoff = elf_info->get_offset(elf_info, 24+16);
-    elf_info->e_phentsize = elf_info->get_half(elf_info, 38+16);
-    elf_info->e_phnum = elf_info->get_half(elf_info, 40+16);
-    elf_info->e_shentsize = elf_info->get_half(elf_info, 42+16);
-    elf_info->e_shnum = elf_info->get_half(elf_info, 44+16);
-    e_shstrndx = elf_info->get_half(elf_info, 46+16);
-    elf_info->str_tbl_offset = elf_info->get_offset(elf_info,elf_info->e_shoff+(e_shstrndx*elf_info->e_shentsize)+24);
+    elf_info->e_entry = elf_info->get_addr(elf_info, 8 + 16);
+    elf_info->e_phoff = elf_info->get_offset(elf_info, 16 + 16);
+    elf_info->e_shoff = elf_info->get_offset(elf_info, 24 + 16);
+    elf_info->e_phentsize = elf_info->get_half(elf_info, 38 + 16);
+    elf_info->e_phnum = elf_info->get_half(elf_info, 40 + 16);
+    elf_info->e_shentsize = elf_info->get_half(elf_info, 42 + 16);
+    elf_info->e_shnum = elf_info->get_half(elf_info, 44 + 16);
+    e_shstrndx = elf_info->get_half(elf_info, 46 + 16);
+    elf_info->str_tbl_offset =
+      elf_info->get_offset(elf_info, elf_info->e_shoff + (e_shstrndx * elf_info->e_shentsize) + 24);
   }
 
   elf_info->str_sym_tbl_offset = find_section_offset(elf_info, SHT_STRTAB, ".strtab", NULL);
@@ -276,18 +278,18 @@ long len;
   elf_info->sym_tbl_len = len;
 
 #if 0
-printf("%lx %lx\n",elf_info->sym_tbl_offset,elf_info->str_sym_tbl_offset);
-printf("%ld\n\n",elf_info->str_sym_tbl_len);
-printf("%lx\n",elf_info->e_entry);
-printf("%lx\n",elf_info->e_phoff);
-printf("%lx\n",elf_info->e_shoff);
-printf("pensize %d\n",elf_info->e_phentsize);
-printf("%d\n",elf_info->e_phnum);
-printf("sendsize %d\n",elf_info->e_shentsize);
-printf("%d\n",elf_info->e_shnum);
-printf("%d\n",e_shstrndx);
-printf("strings: %lx\n",elf_info->str_tbl_offset);
-printf("symbols: %lx\n",elf_info->sym_tbl_offset);
+printf("%lx %lx\n", elf_info->sym_tbl_offset, elf_info->str_sym_tbl_offset);
+printf("%ld\n\n", elf_info->str_sym_tbl_len);
+printf("%lx\n", elf_info->e_entry);
+printf("%lx\n", elf_info->e_phoff);
+printf("%lx\n", elf_info->e_shoff);
+printf("pensize %d\n", elf_info->e_phentsize);
+printf("%d\n", elf_info->e_phnum);
+printf("sendsize %d\n", elf_info->e_shentsize);
+printf("%d\n", elf_info->e_shnum);
+printf("%d\n", e_shstrndx);
+printf("strings: %lx\n", elf_info->str_tbl_offset);
+printf("symbols: %lx\n", elf_info->sym_tbl_offset);
 #endif
 
   return 0;
@@ -295,32 +297,32 @@ printf("symbols: %lx\n",elf_info->sym_tbl_offset);
 
 elf_info_t *open_elf(char *filename)
 {
-elf_info_t *elf_info;
-struct stat stat_buf;
-int fd;
+  elf_info_t *elf_info;
+  struct stat stat_buf;
+  int fd;
 
-  fd=open(filename, O_RDONLY);
+  fd = open(filename, O_RDONLY);
 
-  if (fd==-1) return NULL;
+  if (fd == -1) { return NULL; }
   fstat(fd, &stat_buf);
 
-  elf_info=(elf_info_t *)malloc(sizeof(elf_info_t));
+  elf_info = (elf_info_t *)malloc(sizeof(elf_info_t));
   memset(elf_info, 0, sizeof(elf_info_t));
 
 #ifdef _WIN32
   close(fd);
-  elf_info->fd=CreateFile(filename,FILE_READ_DATA,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_READONLY,NULL);
-  elf_info->mem_handle=CreateFileMapping(elf_info->fd, NULL, PAGE_READONLY, 0, stat_buf.st_size, NULL);
-  elf_info->buffer=(uint8_t *)MapViewOfFile(elf_info->mem_handle, FILE_MAP_READ, 0, 0, stat_buf.st_size);
+  elf_info->fd = CreateFile(filename, FILE_READ_DATA, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, NULL);
+  elf_info->mem_handle = CreateFileMapping(elf_info->fd, NULL, PAGE_READONLY, 0, stat_buf.st_size, NULL);
+  elf_info->buffer = (uint8_t *)MapViewOfFile(elf_info->mem_handle, FILE_MAP_READ, 0, 0, stat_buf.st_size);
 #else
-  elf_info->fd=fd;
-  elf_info->buffer=mmap(0, stat_buf.st_size, PROT_EXEC|PROT_READ, MAP_SHARED, fd, 0);
+  elf_info->fd = fd;
+  elf_info->buffer = mmap(0, stat_buf.st_size, PROT_EXEC|PROT_READ, MAP_SHARED, fd, 0);
 #endif
 
-  //elf_info->buffer=mmap(NULL, stat_buf.st_size, PROT_EXEC|PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, fd, 0);
-  //elf_info->buffer=mmap(NULL, stat_buf.st_size, PROT_EXEC|PROT_READ, MAP_ANONYMOUS|MAP_PRIVATE, fd, 0);
+  //elf_info->buffer = mmap(NULL, stat_buf.st_size, PROT_EXEC|PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, fd, 0);
+  //elf_info->buffer = mmap(NULL, stat_buf.st_size, PROT_EXEC|PROT_READ, MAP_ANONYMOUS|MAP_PRIVATE, fd, 0);
 
-  if (set_functs(elf_info)!=0)
+  if (set_functs(elf_info) != 0)
   {
     close_elf(&elf_info);
     return 0;
@@ -331,14 +333,14 @@ int fd;
 
 elf_info_t *open_elf_from_mem(void *mem_ptr)
 {
-elf_info_t *elf_info;
+  elf_info_t *elf_info;
 
-  elf_info=(elf_info_t *)malloc(sizeof(elf_info_t));
+  elf_info = (elf_info_t *)malloc(sizeof(elf_info_t));
   memset(elf_info, 0, sizeof(elf_info_t));
 
-  elf_info->buffer=mem_ptr;
+  elf_info->buffer = mem_ptr;
 
-  if (set_functs(elf_info)!=0)
+  if (set_functs(elf_info) != 0)
   {
     close_elf(&elf_info);
     return 0;
@@ -349,7 +351,7 @@ elf_info_t *elf_info;
 
 void close_elf(elf_info_t **elf_info)
 {
-  if ((*elf_info)->fd!=0)
+  if ((*elf_info)->fd != 0)
   {
 #ifdef _WIN32
     UnmapViewOfFile((*elf_info)->mem);
@@ -362,30 +364,30 @@ void close_elf(elf_info_t **elf_info)
   }
 
   free(*elf_info);
-  *elf_info=NULL;
+  *elf_info = NULL;
 }
 
 #if 0
 const char *get_elf_string(elf_info_t *elf_info, int index)
 {
-int i;
-char *s;
-static const char *oops="\?\?\?";
+  int i;
+  char *s;
+  static const char *oops="\?\?\?";
 
-  i=1;
-  s=(char *)elf_info->buffer+elf_info->str_tbl_offset;
+  i = 1;
+  s = (char *)elf_info->buffer+elf_info->str_tbl_offset;
 
-  if (index==0) return s;
+  if (index == 0) return s;
 
   s++;
 
-  while(i!=index)
+  while(i != index)
   {
-    while(*s!=0) s++;
+    while(*s != 0) s++;
     s++;
     i++;
 
-    if (*s==0)
+    if (*s == 0)
     {
       return oops;
     }
