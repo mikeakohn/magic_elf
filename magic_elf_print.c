@@ -323,8 +323,8 @@ static void print_core_prstatus(elf_info_t *elf_info)
   printf("               cursig: %d\n", elf_info->read_int16(elf_info));
   // FIXME - only 64 bit
   elf_info->file_ptr += 2;
-  printf("              sigpend: %" PRId64 "\n", elf_info->read_offset(elf_info));
-  printf("              sighold: %" PRId64 "\n", elf_info->read_offset(elf_info));
+  printf("              sigpend: %ld\n", elf_info->read_offset(elf_info));
+  printf("              sighold: %ld\n", elf_info->read_offset(elf_info));
   printf("                  pid: %d\n", elf_info->read_int32(elf_info));
   printf("                 ppid: %d\n", elf_info->read_int32(elf_info));
   printf("                 pgrp: %d\n", elf_info->read_int32(elf_info));
@@ -332,16 +332,16 @@ static void print_core_prstatus(elf_info_t *elf_info)
 
   tv_sec = elf_info->read_offset(elf_info);
   tv_usec = elf_info->read_offset(elf_info);
-  printf("            user time: %ld %ld\n", tv_sec, tv_usec);
+  printf("            user time: %" PRId64 " %" PRId64 "\n", tv_sec, tv_usec);
   tv_sec = elf_info->read_offset(elf_info);
   tv_usec = elf_info->read_offset(elf_info);
-  printf("          system time: %ld %ld\n", tv_sec, tv_usec);
+  printf("          system time: %" PRId64 " %" PRId64 "\n", tv_sec, tv_usec);
   tv_sec = elf_info->read_offset(elf_info);
   tv_usec = elf_info->read_offset(elf_info);
-  printf(" cumulative user time: %ld %ld\n", tv_sec, tv_usec);
+  printf(" cumulative user time: %" PRId64 " %" PRId64 "\n", tv_sec, tv_usec);
   tv_sec = elf_info->read_offset(elf_info);
   tv_usec = elf_info->read_offset(elf_info);
-  printf("  cumulative sys time: %ld %ld\n", tv_sec, tv_usec);
+  printf("  cumulative sys time: %" PRId64 " %" PRId64 "\n", tv_sec, tv_usec);
 
   //elf_info->file_ptr = marker;
 
@@ -412,23 +412,23 @@ static void print_core_prstatus(elf_info_t *elf_info)
     uint64_t fs = (uint64_t)elf_info->read_int64(elf_info);
     uint64_t gs = (uint64_t)elf_info->read_int64(elf_info);
 
-    printf("      R15: %016lx     R14: %016lx   R13: %016lx\n",
+    printf("      R15: %016" PRIx64 "     R14: %016" PRIx64 "   R13: %016" PRIx64 "\n",
       r15, r14, r13);
-    printf("      R12: %016lx     RBP: %016lx   RBX: %016lx\n",
+    printf("      R12: %016" PRIx64 "     RBP: %016" PRIx64 "   RBX: %016" PRIx64 "\n",
       r12, rbp, rbx);
-    printf("      R11: %016lx     R10: %016lx    R9: %016lx\n",
+    printf("      R11: %016" PRIx64 "     R10: %016" PRIx64 "    R9: %016" PRIx64 "\n",
       r11, r10, r9);
-    printf("       R8: %016lx     RAX: %016lx   RCX: %016lx\n",
+    printf("       R8: %016" PRIx64 "     RAX: %016" PRIx64 "   RCX: %016" PRIx64 "\n",
       r8, rax, rcx);
-    printf("      RDX: %016lx     RSI: %016lx   RDI: %016lx\n",
+    printf("      RDX: %016" PRIx64 "     RSI: %016" PRIx64 "   RDI: %016" PRIx64 "\n",
       rdx, rsi, rdi);
-    printf(" ORIG_RAX: %016lx     RIP: %016lx    CS: %016lx\n",
+    printf(" ORIG_RAX: %016" PRIx64 "     RIP: %016" PRIx64 "    CS: %016" PRIx64 "\n",
       orig_rax, rip, cs);
-    printf("   EFLAGS: %016lx     RSP: %016lx    SS: %016lx\n",
+    printf("   EFLAGS: %016" PRIx64 "     RSP: %016" PRIx64 "    SS: %016" PRIx64 "\n",
       eflags, rsp, ss);
-    printf("  FS_BASE: %016lx GS_BASE: %016lx    DS: %016lx\n",
+    printf("  FS_BASE: %016" PRIx64 " GS_BASE: %016" PRIx64 "    DS: %016" PRIx64 "\n",
       fs_base, gs_base, ds);
-    printf("       ES: %016lx      FS: %016lx    GS: %016lx\n",
+    printf("       ES: %016" PRIx64 "      FS: %016" PRIx64 "    GS: %016" PRIx64 "\n",
       es, fs, gs);
 
     int program_header = find_program_header(elf_info, rip);
@@ -459,7 +459,7 @@ static void print_core_prpsinfo(elf_info_t *elf_info)
   printf("             nice: %d\n", elf_info->read_int8(elf_info));
   // FIXME - only 64 bit
   elf_info->file_ptr += 4;
-  printf("             flag: %" PRId64 "\n", elf_info->read_offset(elf_info));
+  printf("             flag: %ld\n", elf_info->read_offset(elf_info));
   //printf("             flag: %d\n", elf_info->read_int32(elf_info));
   printf("              uid: %d\n", elf_info->read_int32(elf_info));
   printf("              gid: %d\n", elf_info->read_int32(elf_info));
@@ -509,7 +509,7 @@ static void print_core_mapped_files(elf_info_t *elf_info, int len)
        uint64_t start = elf_info->read_int64(elf_info);
        uint64_t end = elf_info->read_int64(elf_info);
        uint64_t page_offset = elf_info->read_int64(elf_info);
-       printf("            %016lx %016lx %016lx\n", page_offset, start, end);
+       printf("            %016" PRIx64 " %016" PRIx64" %016" PRIx64 "\n", page_offset, start, end);
        printf("            %s\n\n", filename);
        filename += strlen(filename) + 1;
     }
