@@ -433,9 +433,15 @@ static void print_core_prstatus(elf_info_t *elf_info)
 
     int program_header = find_program_header(elf_info, rip);
 
+    program_header = find_program_header(elf_info, rip);
     if (program_header != -1)
     {
-      printf("     <program header: %d>\n", program_header);
+      printf("     <RIP program header: %d>\n", program_header);
+    }
+    program_header = find_program_header(elf_info, rsp);
+    if (program_header != -1)
+    {
+      printf("     <RSP program header: %d>\n", program_header);
     }
   }
   else
@@ -644,7 +650,19 @@ const char *flags[] =
         {
           printf("]\n");
           //printf("%lx\n", elf_info->file_ptr);
-          for (n = 0; n < descsz; n++) { printf("%c", elf_info->read_int8(elf_info)); }
+          for (n = 0; n < descsz; n++)
+          {
+            uint8_t c = elf_info->read_int8(elf_info);
+
+            if (c >= ' ' && c < 127)
+            {
+              printf("%c", c);
+            }
+            else
+            {
+              printf("<%02x>", c);
+            }
+          }
           printf("\n");
           break;
         }
