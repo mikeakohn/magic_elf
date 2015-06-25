@@ -24,6 +24,9 @@
 
 void print_elf_header(elf_info_t *elf_info)
 {
+  const char *type_string;
+  const char *os_abi;
+  const char *machine;
   int t;
 
   printf("Elf Header\n");
@@ -53,144 +56,150 @@ void print_elf_header(elf_info_t *elf_info)
   { printf("(Big Endian)\n"); }
 
   printf("             EI_VERSION=%d\n", elf_info->buffer[6]);
-  printf("             EI_OSABI=%d ", elf_info->buffer[7]);
 
   switch(elf_info->buffer[7])
   {
-    case 0: { printf("(Unix SysV ABI)\n"); break; }
-    case 1: { printf("(HP-UX)\n"); break; }
-    case 2: { printf("(NetBSD)\n"); break; }
-    case 6: { printf("(Solaris)\n"); break; }
-    case 7: { printf("(AIX)\n"); break; }
-    case 8: { printf("(IRIX)\n"); break; }
-    case 9: { printf("(FreeBSD)\n"); break; }
-    case 10: { printf("(Tru64)\n"); break; }
-    case 11: { printf("(Novell Modesto)\n"); break; }
-    case 12: { printf("(OpenBSD)\n"); break; }
-    case 13: { printf("(OpenVMS)\n"); break; }
-    case 14: { printf("(HP Non-Stop Kernel)\n"); break; }
-    case 15: { printf("(Amiga Research OS)\n"); break; }
-    case 255: { printf("(Embedded)\n"); break; }
-    default: printf("(Unknown)\n");
+    case 0: os_abi = "(Unix SysV ABI)"; break;
+    case 1: os_abi = "(HP-UX)"; break;
+    case 2: os_abi = "(NetBSD)"; break;
+    case 6: os_abi = "(Solaris)"; break;
+    case 7: os_abi = "(AIX)"; break;
+    case 8: os_abi = "(IRIX)"; break;
+    case 9: os_abi = "(FreeBSD)"; break;
+    case 10: os_abi = "(Tru64)"; break;
+    case 11: os_abi = "(Novell Modesto)"; break;
+    case 12: os_abi = "(OpenBSD)"; break;
+    case 13: os_abi = "(OpenVMS)"; break;
+    case 14: os_abi = "(HP Non-Stop Kernel)"; break;
+    case 15: os_abi = "(Amiga Research OS)"; break;
+    case 255: os_abi = "(Embedded)"; break;
+    default: os_abi = "(Unknown)"; break;
   }
 
+  printf("             EI_OSABI=%d %s\n", elf_info->buffer[7], os_abi);
   printf("             EI_ABIVER=%d\n", elf_info->buffer[8]);
 
   elf_info->file_ptr = 16;
 
   t = elf_info->read_half(elf_info);
-  printf("     e_type: %02x ", t);
   switch(t)
   {
-    case 0: { printf("(No type)\n"); break; }
-    case 1: { printf("(Relocatable)\n"); break; }
-    case 2: { printf("(Executable)\n"); break; }
-    case 3: { printf("(Shared Object)\n"); break; }
-    case 4: { printf("(Core File)\n"); break; }
-    case 0xfe00: { printf("(OS-specific:ET_LOOS)\n"); break; }
-    case 0xfeff: { printf("(OS-specific:ET_HIOS)\n"); break; }
-    case 0xff00: { printf("(Processor-specific:ET_LOPROC)\n"); break; }
-    case 0xffff: { printf("(Processor-specific:ET_HIPROC)\n"); break; }
-    default: printf("(\?\?\?)\n");
+    case 0: type_string = "(No type)"; break;
+    case 1: type_string = "(Relocatable)"; break;
+    case 2: type_string = "(Executable)"; break;
+    case 3: type_string = "(Shared Object)"; break;
+    case 4: type_string = "(Core File)"; break;
+    case 0xfe00: type_string = "(OS-specific:ET_LOOS)"; break;
+    case 0xfeff: type_string = "(OS-specific:ET_HIOS)"; break;
+    case 0xff00: type_string = "(Processor-specific:ET_LOPROC)"; break;
+    case 0xffff: type_string = "(Processor-specific:ET_HIPROC)"; break;
+    default: type_string = "(\?\?\?)"; break;
   }
 
+  printf("     e_type: %02x %s\n", t, type_string);
+
   elf_info->e_machine = elf_info->read_half(elf_info);
-  printf("  e_machine: 0x%x ", elf_info->e_machine);
   switch(elf_info->e_machine)
   {
-    case 0: { printf("(None)\n"); break; }
-    case 1: { printf("(AT&T WE 32100)\n"); break; }
-    case 2: { printf("(SPARC)\n"); break; }
-    case 3: { printf("(x86-32)\n"); break; }
-    case 4: { printf("(Motorola 68000)\n"); break; }
-    case 5: { printf("(Motorola 88000)\n"); break; }
-    case 7: { printf("(Intel 80860)\n"); break; }
-    case 8: { printf("(MIPS RS3000)\n"); break; }
-    case 10: { printf("(MIPS RS3000 Little-Endian)\n"); break; }
-    case 15: { printf("(PA-RISC)\n"); break; }
-    case 17: { printf("(Fujitsu VPP500)\n"); break; }
-    case 18: { printf("(Enhanced SPARC)\n"); break; }
-    case 19: { printf("(Intel 80960)\n"); break; }
-    case 20: { printf("(PowerPC)\n"); break; }
-    case 21: { printf("(PowerPC 64 bit)\n"); break; }
-    case 22: { printf("(IBM System/390)\n"); break; }
-    case 36: { printf("(NEC V800)\n"); break; }
-    case 37: { printf("(Fujitsu FR20)\n"); break; }
-    case 38: { printf("(TRW RH-32)\n"); break; }
-    case 39: { printf("(Motorola RCE)\n"); break; }
-    case 40: { printf("(ARM)\n"); break; }
-    case 41: { printf("(Alpha)\n"); break; }
-    case 42: { printf("(Hitachi SH)\n"); break; }
-    case 43: { printf("(Sparc V9)\n"); break; }
-    case 44: { printf("(Siemens Tricore)\n"); break; }
-    case 45: { printf("(ARC)\n"); break; }
-    case 46: { printf("(Hitachi H8/300)\n"); break; }
-    case 47: { printf("(Hitachi H8/300H)\n"); break; }
-    case 48: { printf("(Hitachi H8S)\n"); break; }
-    case 49: { printf("(Hitachi H8/500)\n"); break; }
-    case 50: { printf("(Itanium IA-64)\n"); break; }
-    case 51: { printf("(MIPS-X)\n"); break; }
-    case 52: { printf("(Motorola Coldfire)\n"); break; }
-    case 53: { printf("(Motorola M68HC12)\n"); break; }
-    case 54: { printf("(Fujitsu MMA)\n"); break; }
-    case 55: { printf("(Siemens PCP)\n"); break; }
-    case 56: { printf("(Sony nCPU)\n"); break; }
-    case 57: { printf("(Denso NDR1)\n"); break; }
-    case 58: { printf("(Motorola Star)\n"); break; }
-    case 59: { printf("(Toyota ME16)\n"); break; }
-    case 60: { printf("(ST ST100)\n"); break; }
-    case 61: { printf("(TinyJ)\n"); break; }
-    case 62: { printf("(x86-64)\n"); break; }
-    case 63: { printf("(Sony DSP)\n"); break; }
-    case 64: { printf("(DEC PDP-10)\n"); break; }
-    case 65: { printf("(DEC PDP-11)\n"); break; }
-    case 66: { printf("(Siemens FX66)\n"); break; }
-    case 67: { printf("(ST ST9+)\n"); break; }
-    case 68: { printf("(ST ST7)\n"); break; }
-    case 69: { printf("(Motorola MC68HC16)\n"); break; }
-    case 70: { printf("(Motorola MC68HC11)\n"); break; }
-    case 71: { printf("(Motorola MC68HC08)\n"); break; }
-    case 72: { printf("(Motorola MC68HC05)\n"); break; }
-    case 73: { printf("(Silicon Graphics SVx)\n"); break; }
-    case 74: { printf("(ST ST19)\n"); break; }
-    case 75: { printf("(Digital VAX)\n"); break; }
-    case 76: { printf("(Axis EXTRAX)\n"); break; }
-    case 77: { printf("(Infineon Technologies)\n"); break; }
-    case 78: { printf("(Element 14)\n"); break; }
-    case 79: { printf("(LSI Logic)\n"); break; }
-    case 80: { printf("(Donald Knuth's edu)\n"); break; }
-    case 81: { printf("(Harvard Uni machine independant)\n"); break; }
-    case 82: { printf("(SiTera Prism)\n"); break; }
-    case 83: { printf("(Atmel AVR 8bit)\n"); break; }
-    case 84: { printf("(Fujitsu FR30)\n"); break; }
-    case 85: { printf("(Mitsubishi D10V)\n"); break; }
-    case 86: { printf("(Mitsubishi D30V)\n"); break; }
-    case 87: { printf("(NEC v850)"); break; }
-    case 88: { printf("(Mitsubishi M32R)\n"); break; }
-    case 89: { printf("(Mitsubishi MN10300)\n"); break; }
-    case 90: { printf("(Mitsubishi M310200)\n"); break; }
-    case 91: { printf("(picoJava)\n"); break; }
-    case 92: { printf("(OpenRISC)\n"); break; }
-    case 93: { printf("(ARC Cores Tangent-A5)\n"); break; }
-    case 94: { printf("(Tensilica Xtensa)\n"); break; }
-    case 95: { printf("(Alphamosaic VideoCore)\n"); break; }
-    case 96: { printf("(Thompson Multimedia)\n"); break; }
-    case 97: { printf("(National Semiconductor 32000)\n"); break; }
-    case 98: { printf("(Tenor Network TPC)\n"); break; }
-    case 99: { printf("(Trebia SNP1000)\n"); break; }
-    case 100: { printf("(ST ST200)\n"); break; }
-    case 101: { printf("(Ubicom IP2xxx)\n"); break; }
-    case 102: { printf("(MAXProcessor)\n"); break; }
-    case 103: { printf("(National Semiconductor Compact RISC)\n"); break; }
-    case 104: { printf("(Fujitsu F2MC16)\n"); break; }
-    case 105: { printf("(TI MSP430)\n"); break; }
-    case 106: { printf("(Analog Devices Blackfin)\n"); break; }
-    case 107: { printf("(Seiko S1C33)\n"); break; }
-    case 108: { printf("(Sharp embedded)\n"); break; }
-    case 109: { printf("(Arca RISC)\n"); break; }
-    case 110: { printf("(PKU-Unity)\n"); break; }
-    default: printf("(Unknown)\n");
+    case 0: machine = "(None)"; break;
+    case 1: machine = "(AT&T WE 32100)"; break;
+    case 2: machine = "(SPARC)"; break;
+    case 3: machine = "(x86-32)"; break;
+    case 4: machine = "(Motorola 68000)"; break;
+    case 5: machine = "(Motorola 88000)"; break;
+    case 7: machine = "(Intel 80860)"; break;
+    case 8: machine = "(MIPS RS3000)"; break;
+    case 10: machine = "(MIPS RS3000 Little-Endian)"; break;
+    case 15: machine = "(PA-RISC)"; break;
+    case 17: machine = "(Fujitsu VPP500)"; break;
+    case 18: machine = "(Enhanced SPARC)"; break;
+    case 19: machine = "(Intel 80960)"; break;
+    case 20: machine = "(PowerPC)"; break;
+    case 21: machine = "(PowerPC 64 bit)"; break;
+    case 22: machine = "(IBM System/390)"; break;
+    case 36: machine = "(NEC V800)"; break;
+    case 37: machine = "(Fujitsu FR20)"; break;
+    case 38: machine = "(TRW RH-32)"; break;
+    case 39: machine = "(Motorola RCE)"; break;
+    case 40: machine = "(ARM)"; break;
+    case 41: machine = "(Alpha)"; break;
+    case 42: machine = "(Hitachi SH)"; break;
+    case 43: machine = "(Sparc V9)"; break;
+    case 44: machine = "(Siemens Tricore)"; break;
+    case 45: machine = "(ARC)"; break;
+    case 46: machine = "(Hitachi H8/300)"; break;
+    case 47: machine = "(Hitachi H8/300H)"; break;
+    case 48: machine = "(Hitachi H8S)"; break;
+    case 49: machine = "(Hitachi H8/500)"; break;
+    case 50: machine = "(Itanium IA-64)"; break;
+    case 51: machine = "(MIPS-X)"; break;
+    case 52: machine = "(Motorola Coldfire)"; break;
+    case 53: machine = "(Motorola M68HC12)"; break;
+    case 54: machine = "(Fujitsu MMA)"; break;
+    case 55: machine = "(Siemens PCP)"; break;
+    case 56: machine = "(Sony nCPU)"; break;
+    case 57: machine = "(Denso NDR1)"; break;
+    case 58: machine = "(Motorola Star)"; break;
+    case 59: machine = "(Toyota ME16)"; break;
+    case 60: machine = "(ST ST100)"; break;
+    case 61: machine = "(TinyJ)"; break;
+    case 62: machine = "(x86-64)"; break;
+    case 63: machine = "(Sony DSP)"; break;
+    case 64: machine = "(DEC PDP-10)"; break;
+    case 65: machine = "(DEC PDP-11)"; break;
+    case 66: machine = "(Siemens FX66)"; break;
+    case 67: machine = "(ST ST9+)"; break;
+    case 68: machine = "(ST ST7)"; break;
+    case 69: machine = "(Motorola MC68HC16)"; break;
+    case 70: machine = "(Motorola MC68HC11)"; break;
+    case 71: machine = "(Motorola MC68HC08)"; break;
+    case 72: machine = "(Motorola MC68HC05)"; break;
+    case 73: machine = "(Silicon Graphics SVx)"; break;
+    case 74: machine = "(ST ST19)"; break;
+    case 75: machine = "(Digital VAX)"; break;
+    case 76: machine = "(Axis EXTRAX)"; break;
+    case 77: machine = "(Infineon Technologies)"; break;
+    case 78: machine = "(Element 14)"; break;
+    case 79: machine = "(LSI Logic)"; break;
+    case 80: machine = "(Donald Knuth's edu)"; break;
+    case 81: machine = "(Harvard Uni machine independant)"; break;
+    case 82: machine = "(SiTera Prism)"; break;
+    case 83: machine = "(Atmel AVR 8bit)"; break;
+    case 84: machine = "(Fujitsu FR30)"; break;
+    case 85: machine = "(Mitsubishi D10V)"; break;
+    case 86: machine = "(Mitsubishi D30V)"; break;
+    case 87: machine = "(NEC v850)"; break;
+    case 88: machine = "(Mitsubishi M32R)"; break;
+    case 89: machine = "(Mitsubishi MN10300)"; break;
+    case 90: machine = "(Mitsubishi M310200)"; break;
+    case 91: machine = "(picoJava)"; break;
+    case 92: machine = "(OpenRISC)"; break;
+    case 93: machine = "(ARC Cores Tangent-A5)"; break;
+    case 94: machine = "(Tensilica Xtensa)"; break;
+    case 95: machine = "(Alphamosaic VideoCore)"; break;
+    case 96: machine = "(Thompson Multimedia)"; break;
+    case 97: machine = "(National Semiconductor 32000)"; break;
+    case 98: machine = "(Tenor Network TPC)"; break;
+    case 99: machine = "(Trebia SNP1000)"; break;
+    case 100: machine = "(ST ST200)"; break;
+    case 101: machine = "(Ubicom IP2xxx)"; break;
+    case 102: machine = "(MAXProcessor)"; break;
+    case 103: machine = "(National Semiconductor Compact RISC)"; break;
+    case 104: machine = "(Fujitsu F2MC16)"; break;
+    case 105: machine = "(TI MSP430)"; break;
+    case 106: machine = "(Analog Devices Blackfin)"; break;
+    case 107: machine = "(Seiko S1C33)"; break;
+    case 108: machine = "(Sharp embedded)"; break;
+    case 109: machine = "(Arca RISC)"; break;
+    case 110: machine = "(PKU-Unity)"; break;
+    case 165: machine = "(8051)"; break;
+    case 168: machine = "(STM8)"; break;
+    case 204: machine = "(PIC)"; break;
+    case 220: machine = "(Z80)"; break;
+    default: machine = "(Unknown)"; break;
   }
+
+  printf("  e_machine: 0x%x %s\n", elf_info->e_machine, machine);
 
   printf("  e_version: %d\n", elf_info->read_word(elf_info));
   printf("    e_entry: 0x%lx (virt addr)\n", elf_info->read_addr(elf_info));
