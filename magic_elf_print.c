@@ -193,7 +193,7 @@ void print_elf_header(elf_info_t *elf_info)
     case 109: machine = "(Arca RISC)"; break;
     case 110: machine = "(PKU-Unity)"; break;
     case 165: machine = "(8051)"; break;
-    case 168: machine = "(STM8)"; break;
+    case 186: machine = "(STM8)"; break;
     case 204: machine = "(PIC)"; break;
     case 220: machine = "(Z80)"; break;
     default: machine = "(Unknown)"; break;
