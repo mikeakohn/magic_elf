@@ -108,8 +108,8 @@ void print_elf_header(elf_info_t *elf_info)
     case 4: machine = "(Motorola 68000)"; break;
     case 5: machine = "(Motorola 88000)"; break;
     case 7: machine = "(Intel 80860)"; break;
-    case 8: machine = "(MIPS RS3000)"; break;
-    case 10: machine = "(MIPS RS3000 Little-Endian)"; break;
+    case 8: machine = "(MIPS R3000)"; break;
+    case 10: machine = "(MIPS R3000 Little-Endian)"; break;
     case 15: machine = "(PA-RISC)"; break;
     case 17: machine = "(Fujitsu VPP500)"; break;
     case 18: machine = "(Enhanced SPARC)"; break;
