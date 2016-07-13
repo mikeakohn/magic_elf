@@ -574,7 +574,7 @@ const char *flags[] =
   {
     marker = elf_info->file_ptr + elf_info->e_phentsize;
 
-    printf("Program Header %d\n",count);
+    printf("Program Header %d (offset=0x%04" PRIx64 ")\n", count, elf_info->file_ptr);
     printf("---------------------------------------------\n");
 
     if (elf_info->bitwidth == 32)
@@ -881,7 +881,7 @@ void print_elf_section_headers(elf_info_t *elf_info)
   {
     marker = elf_info->file_ptr+elf_info->e_shentsize;
 
-    printf("Section Header %d\n", count);
+    printf("Section Header %d (offset=0x%04" PRIx64 ")\n", count, elf_info->file_ptr);
     printf("---------------------------------------------\n");
 
     t = elf_info->read_word(elf_info);
