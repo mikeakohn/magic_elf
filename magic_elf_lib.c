@@ -255,7 +255,7 @@ static int set_functs(elf_info_t *elf_info)
     elf_info->e_phnum = elf_info->get_half(elf_info, 28 + 16);
     elf_info->e_shentsize = elf_info->get_half(elf_info, 30 + 16);
     elf_info->e_shnum = elf_info->get_half(elf_info, 32 + 16);
-    e_shstrndx=elf_info->get_half(elf_info, 34 + 16);
+    e_shstrndx = elf_info->get_half(elf_info, 34 + 16);
     elf_info->str_tbl_offset =
       elf_info->get_offset(elf_info, elf_info->e_shoff + (e_shstrndx * elf_info->e_shentsize) + 16);
   }
