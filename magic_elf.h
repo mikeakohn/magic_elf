@@ -54,7 +54,7 @@ typedef struct
   uint8_t *buffer;
   int bitwidth;
   long buffer_len;
-  unsigned long file_ptr;
+  uint64_t file_ptr;
   uint16_t (*get_half)(void *elf_info, long offset);
   uint32_t (*get_word)(void *elf_info, long offset);
   unsigned long (*get_addr)(void *elf_info, long offset);
