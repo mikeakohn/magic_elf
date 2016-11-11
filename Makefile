@@ -1,6 +1,6 @@
 
 DEBUG=-DDEBUG -g
-CFLAGS=-Wall -O2 $(DEBUG)
+CFLAGS=-Wall -O3 $(DEBUG)
 LDFLAGS=
 CC=gcc
 #CC=i686-w64-mingw32-gcc
