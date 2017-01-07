@@ -117,6 +117,7 @@ void print_elf_header(elf_info_t *elf_info)
     case 20: machine = "(PowerPC)"; break;
     case 21: machine = "(PowerPC 64 bit)"; break;
     case 22: machine = "(IBM System/390)"; break;
+    case 23: machine = "(IBM Cell SPU)"; break;
     case 36: machine = "(NEC V800)"; break;
     case 37: machine = "(Fujitsu FR20)"; break;
     case 38: machine = "(TRW RH-32)"; break;
