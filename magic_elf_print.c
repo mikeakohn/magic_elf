@@ -197,6 +197,7 @@ void print_elf_header(elf_info_t *elf_info)
     case 186: machine = "(STM8)"; break;
     case 204: machine = "(PIC)"; break;
     case 220: machine = "(Z80)"; break;
+    case 4643: machine = "(Epiphany)"; break;
     default: machine = "(Unknown)"; break;
   }
 
