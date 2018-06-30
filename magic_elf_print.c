@@ -2,10 +2,10 @@
 
  magic_elf - The ELF file format analyzer.
 
- Copyright 2009-2017 - Michael Kohn (mike@mikekohn.net)
+ Copyright 2009-2018 - Michael Kohn (mike@mikekohn.net)
  http://www.mikekohn.net/
 
- This program falls under the BSD license. 
+ This program falls under the BSD license.
 
 */
 
@@ -556,17 +556,17 @@ const char *get_program_header_type(int type)
 
 void print_elf_program_headers(elf_info_t *elf_info)
 {
-int count;
-long marker;
-unsigned int p_type;
-int p_flags;
-int namesz,descsz,type;
-long p_offset,p_filesz;
-int n;
-const char *flags[] =
-{
-  "---", "--X", "-W-", "-WX", "R--", "R-X", "RW-", "RWX"
-};
+  int count;
+  long marker;
+  unsigned int p_type;
+  int p_flags;
+  int namesz,descsz,type;
+  long p_offset,p_filesz;
+  int n;
+  const char *flags[] =
+  {
+    "---", "--X", "-W-", "-WX", "R--", "R-X", "RW-", "RWX"
+  };
 
   elf_info->file_ptr = elf_info->e_phoff;
 
@@ -777,7 +777,7 @@ static void print_elf_symtab_64(elf_info_t *elf_info, int offset, int sh_size, i
   printf("\n\n");
 }
 
-static void print_elf_string_table(unsigned char *table, int sh_size)
+static void print_elf_string_table(uint8_t *table, int sh_size)
 {
   int index = 0;
   int len = 0;
@@ -786,8 +786,11 @@ static void print_elf_string_table(unsigned char *table, int sh_size)
   for (n = 0; n < sh_size; n++)
   {
     if (len == 0) { printf("\n   [%d] %d: ", n, index++); }
+
     if (table[n] >= 32 && table[n] < 127)
-    { printf("%c", table[n]); }
+    {
+      printf("%c", table[n]);
+    }
       else
     {
       if (table[n] == 0) { len = 0; continue; }
@@ -796,6 +799,74 @@ static void print_elf_string_table(unsigned char *table, int sh_size)
 
     len++;
   }
+
+  printf("\n\n");
+}
+
+static void print_elf_relocation32(elf_info_t *elf_info, int sh_offset, int sh_size)
+{
+  const char *relocation_types[] =
+  {
+    "NONE",
+    "386_32",
+    "PC32",
+    "GOT32",
+    "PLT32",
+    "COPY",
+    "GLOB_DAT",
+    "JMP_SLOT",
+    "RELATIVE",
+    "GOTOFF",
+    "GOTPC",
+  };
+
+  int n = 0;
+
+  printf("Offset     Symbol     Type\n");
+
+  while(n < sh_size)
+  {
+    uint32_t offset = elf_info->get_addr(elf_info, sh_offset + n);
+    uint32_t info = elf_info->get_word(elf_info, sh_offset + n + 4);
+    int sym = info >> 8;
+    int type = info & 0xff;
+
+    printf("0x%08x 0x%08x ", offset, sym);
+
+    if (type > 10)
+    {
+      printf("%d\n", type);
+    }
+      else
+    {
+      printf("%s\n", relocation_types[type]);
+    }
+     
+
+    n = n + 8;
+  }
+
+  printf("\n\n");
+}
+
+static void print_elf_relocation64(elf_info_t *elf_info, int sh_offset, int sh_size)
+{
+  int n = 0;
+
+  printf("%12s %12s type\n", "Offset", "Sym");
+
+  while(n < sh_size)
+  {
+    uint64_t offset = elf_info->get_addr(elf_info, sh_offset + n);
+    uint64_t info = elf_info->get_word(elf_info, sh_offset + n + 8);
+    uint64_t sym = info >> 8;
+    int type = info & 0xff;
+
+    printf("0x%08lx 0x%08lx %d\n", offset, sym, type);
+
+    n = n + 16;
+  }
+
   printf("\n\n");
 }
 
@@ -879,7 +950,7 @@ void print_elf_section_headers(elf_info_t *elf_info)
 
   printf("Elf Section Headers (count=%d)\n\n", elf_info->e_shnum);
 
-  for(count = 0; count<elf_info->e_shnum; count++)
+  for (count = 0; count<elf_info->e_shnum; count++)
   {
     marker = elf_info->file_ptr+elf_info->e_shentsize;
 
@@ -974,29 +1045,49 @@ void print_elf_section_headers(elf_info_t *elf_info)
         print_elf_string_table(elf_info->buffer + sh_offset, sh_size);
       }
         else
+      if (strcmp(".rel.text", section_name) == 0)
+      {
+        if (elf_info->bitwidth == 32)
+        {
+          print_elf_relocation32(elf_info, sh_offset, sh_size);
+        }
+          else
+        {
+          print_elf_relocation64(elf_info, elf_info->buffer + sh_offset, sh_size);
+        }
+      }
+        else
       if (strcmp(".symtab", section_name) == 0)
       {
         int strtab_offset = find_section_offset(elf_info, SHT_STRTAB, ".strtab", NULL);
         if (elf_info->bitwidth == 32)
-        { print_elf_symtab_32(elf_info, sh_offset, sh_size, sh_entsize, strtab_offset); }
+        {
+          print_elf_symtab_32(elf_info, sh_offset, sh_size, sh_entsize, strtab_offset);
+        }
           else
         if (elf_info->bitwidth == 64)
-        { print_elf_symtab_64(elf_info, sh_offset, sh_size, sh_entsize, strtab_offset); }
+        {
+          print_elf_symtab_64(elf_info, sh_offset, sh_size, sh_entsize, strtab_offset);
+        }
       }
         else
       if (strcmp(".dynsym", section_name) == 0)
       {
         int strtab_offset = find_section_offset(elf_info, SHT_STRTAB, ".dynstr", NULL);
         if (elf_info->bitwidth == 32)
-        { print_elf_symtab_32(elf_info, sh_offset, sh_size, sh_entsize, strtab_offset); }
+        {
+          print_elf_symtab_32(elf_info, sh_offset, sh_size, sh_entsize, strtab_offset);
+        }
           else
         if (elf_info->bitwidth == 64)
-        { print_elf_symtab_64(elf_info, sh_offset, sh_size, sh_entsize, strtab_offset); }
+        {
+          print_elf_symtab_64(elf_info, sh_offset, sh_size, sh_entsize, strtab_offset);
+        }
       }
         else
       if (strcmp(".ARM.attributes", section_name) == 0 || sh_type == 3)
       {
-        print_elf_arm_attrs(elf_info->buffer+sh_offset, sh_size);
+        print_elf_arm_attrs(elf_info->buffer + sh_offset, sh_size);
       }
 #if 0
         else
@@ -1006,14 +1097,6 @@ void print_elf_section_headers(elf_info_t *elf_info)
       }
 #endif
     }
-
-/*
-if (elf_info->file_ptr != marker)
-{
-  printf("%ld %ld\n", elf_info->file_ptr,marker + elf_info->e_shentsize);
-exit(0);
-}
-*/
 
     elf_info->file_ptr = marker;
   }
