@@ -803,7 +803,7 @@ static void print_elf_string_table(uint8_t *table, int sh_size)
   printf("\n\n");
 }
 
-static void print_elf_relocation32(elf_info_t *elf_info, int sh_offset, int sh_size)
+static void print_elf_relocation32(elf_info_t *elf_info, int sh_offset, int sh_size, int symtab_offset, int strtab_offset)
 {
   const char *relocation_types[] =
   {
@@ -822,7 +822,7 @@ static void print_elf_relocation32(elf_info_t *elf_info, int sh_offset, int sh_s
 
   int n = 0;
 
-  printf("Offset     Symbol     Type\n");
+  printf("Offset     Type     Symbol\n");
 
   while(n < sh_size)
   {
@@ -831,17 +831,21 @@ static void print_elf_relocation32(elf_info_t *elf_info, int sh_offset, int sh_s
     int sym = info >> 8;
     int type = info & 0xff;
 
-    printf("0x%08x 0x%08x ", offset, sym);
+    printf("0x%08x ", offset);
 
     if (type > 10)
     {
-      printf("%d\n", type);
+      printf("%d ", type);
     }
       else
     {
-      printf("%s\n", relocation_types[type]);
+      printf("%-8s ", relocation_types[type]);
     }
+
+    int symbol = elf_info->get_word(elf_info, symtab_offset + (sym * 16));
+    uint8_t *name = elf_info->buffer + strtab_offset + symbol;
      
+    printf("[%d] %s\n", sym, name);
 
     n = n + 8;
   }
@@ -945,6 +949,8 @@ void print_elf_section_headers(elf_info_t *elf_info)
   int t;
   long i;
   long marker;
+  //uint32_t rel_text_offset;
+  //uint32_t symtable_offset;
 
   elf_info->file_ptr = elf_info->e_shoff;
 
@@ -1047,13 +1053,17 @@ void print_elf_section_headers(elf_info_t *elf_info)
         else
       if (strcmp(".rel.text", section_name) == 0)
       {
+        // Probably should get a size here too :(
+        int symtab_offset = find_section_offset(elf_info, SHT_SYMTAB, ".symtab", NULL);
+        int strtab_offset = find_section_offset(elf_info, SHT_STRTAB, ".strtab", NULL);
+
         if (elf_info->bitwidth == 32)
         {
-          print_elf_relocation32(elf_info, sh_offset, sh_size);
+          print_elf_relocation32(elf_info, sh_offset, sh_size, symtab_offset, strtab_offset);
         }
           else
         {
-          print_elf_relocation64(elf_info, elf_info->buffer + sh_offset, sh_size);
+          print_elf_relocation64(elf_info, sh_offset, sh_size);
         }
       }
         else
