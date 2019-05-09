@@ -9,6 +9,7 @@ CC=gcc
 OBJECTS= \
   file_io.o \
   magic_elf_lib.o \
+  modify.o \
   print.o
 
 default: $(OBJECTS)
