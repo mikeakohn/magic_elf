@@ -2,7 +2,7 @@
 
  magic_elf - The ELF file format analyzer.
 
- Copyright 2009-2017 - Michael Kohn (mike@mikekohn.net)
+ Copyright 2009-2019 - Michael Kohn (mike@mikekohn.net)
  http://www.mikekohn.net/
 
  This program falls under the BSD license. 
@@ -32,15 +32,17 @@ int main(int argc, char *argv[])
   int bits = 0;
   int r;
 
-  printf("\nmagic_elf - Copyright 2009-2017 by Michael Kohn <mike@mikekohn.net>\n");
-  printf("http://www.mikekohn.net/\n");
-  printf("Version: January 7, 2017\n\n");
+  printf(
+    "\nmagic_elf - Copyright 2009-2019 by Michael Kohn <mike@mikekohn.net>\n"
+    "http://www.mikekohn.net/\n"
+    "Version: January 7, 2017\n\n");
 
   if (argc<2)
   {
-    printf("Usage: magic_elf [ options ] <filename.so>\n");
-    printf("    -modify <function_name> <retvalue>\n");
-    printf("    -show <symbol>\n\n");
+    printf(
+      "Usage: magic_elf [ options ] <filename.so>\n"
+      "    -modify <function_name> <retvalue>\n"
+      "    -show <symbol>\n\n");
     exit(0);
   }
 
@@ -49,7 +51,10 @@ int main(int argc, char *argv[])
     if (strcmp(argv[r],"-modify") == 0)
     {
       if (r + 2 >= argc)
-      { printf("Error: -modify requires 2 arguments\n"); exit(1); }
+      {
+        printf("Error: -modify requires 2 arguments\n");
+        exit(1);
+      }
 
       function_name = argv[r + 1];
       ret_value = atol(argv[r + 2]);
@@ -59,7 +64,10 @@ int main(int argc, char *argv[])
     if (strcmp(argv[r],"-show") == 0)
     {
       if (r + 1 >= argc)
-      { printf("Error: -show requires 1 arguments\n"); exit(1); }
+      {
+        printf("Error: -show requires 1 arguments\n");
+        exit(1);
+      }
 
       symbol_name = argv[r+1];
       r++;
@@ -77,12 +85,12 @@ int main(int argc, char *argv[])
   }
 
   elf_info = open_elf(filename);
+
   if (elf_info == 0)
   {
     printf("Couldn't open file or not an elf\n");
     exit(0);
   }
-
 
   if (symbol_name == NULL && function_name == NULL)
   {
@@ -103,16 +111,13 @@ int main(int argc, char *argv[])
       bits = 0;
     }
 
-    if (elf_info->buffer[4] == 1)
-    { bits = 32; }
-      else
-    if (elf_info->buffer[4] == 2)
-    { bits = 64; }
+    bits = elf_info->buffer[4] == 1 ? 32 : 64;
   }
 
   if (symbol_name != NULL)
   {
     file_offset=find_symbol_offset(elf_info,symbol_name);
+
     if (file_offset == -1)
     {
       printf("Error: Can't find symbol '%s'.\n", symbol_name);
@@ -132,7 +137,9 @@ int main(int argc, char *argv[])
   if (function_name != NULL)
   {
     FILE *fp = fopen(filename, "rb+");
+
     fseek(fp, file_offset, SEEK_SET);
+
     if (bits == 64)
     {
       putc(0x48, fp);
@@ -164,5 +171,4 @@ int main(int argc, char *argv[])
 
   return 0;
 }
-
 
