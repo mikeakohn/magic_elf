@@ -1,11 +1,11 @@
 /*
 
- magic_elf - The ELF file format analyzer.
+  magic_elf - The ELF file format analyzer.
 
- Copyright 2009-2018 - Michael Kohn (mike@mikekohn.net)
- http://www.mikekohn.net/
+  Copyright 2009-2019 - Michael Kohn (mike@mikekohn.net)
+  http://www.mikekohn.net/
 
- This program falls under the BSD license.
+  This program falls under the BSD license.
 
 */
 
@@ -878,7 +878,7 @@ static void print_elf_relocation32(elf_info_t *elf_info, int sh_offset, int sh_s
 
     int symbol = elf_info->get_word(elf_info, symtab_offset + (sym * 16));
     uint8_t *name = elf_info->buffer + strtab_offset + symbol;
-     
+
     printf("[%d] %s\n", sym, name);
 
     n = n + 8;

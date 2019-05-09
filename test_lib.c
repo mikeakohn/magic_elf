@@ -1,13 +1,13 @@
 /*
 
- magic_elf - The ELF file format analyzer.
+  magic_elf - The ELF file format analyzer.
 
- Copyright 2009-2017 - Michael Kohn (mike@mikekohn.net)
- http://www.mikekohn.net/
+  Copyright 2009-2019 - Michael Kohn (mike@mikekohn.net)
+  http://www.mikekohn.net/
 
- This program falls under the BSD license. 
+  This program falls under the BSD license.
 
- Useful page: http://www.sco.com/developers/gabi/latest/contents.html
+  Useful page: http://www.sco.com/developers/gabi/latest/contents.html
 
 */
 

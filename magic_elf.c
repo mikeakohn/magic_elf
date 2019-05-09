@@ -1,14 +1,14 @@
 /*
 
- magic_elf - The ELF file format analyzer.
+  magic_elf - The ELF file format analyzer.
 
- Copyright 2009-2019 - Michael Kohn (mike@mikekohn.net)
- http://www.mikekohn.net/
+  Copyright 2009-2019 - Michael Kohn (mike@mikekohn.net)
+  http://www.mikekohn.net/
 
- This program falls under the BSD license. 
+  This program falls under the BSD license.
 
- Useful page: http://www.sco.com/developers/gabi/latest/contents.html
-              http://www.iecc.com/linker/linker10.html
+  Useful page: http://www.sco.com/developers/gabi/latest/contents.html
+               http://www.iecc.com/linker/linker10.html
 
 */
 
@@ -102,6 +102,7 @@ int main(int argc, char *argv[])
   if (function_name != NULL)
   {
     file_offset = find_symbol_offset(elf_info, function_name);
+
     if (file_offset == -1)
     {
       printf("Error: Can't find function '%s'.\n", function_name);
@@ -116,7 +117,7 @@ int main(int argc, char *argv[])
 
   if (symbol_name != NULL)
   {
-    file_offset=find_symbol_offset(elf_info,symbol_name);
+    file_offset = find_symbol_offset(elf_info,symbol_name);
 
     if (file_offset == -1)
     {
@@ -140,6 +141,16 @@ int main(int argc, char *argv[])
 
     fseek(fp, file_offset, SEEK_SET);
 
+    if (bits == 32)
+    {
+      putc(0xb8, fp);
+      putc(ret_value & 0xff, fp);
+      putc((ret_value >> 8) & 0xff, fp);
+      putc((ret_value >> 16) & 0xff, fp);
+      putc((ret_value >> 24) & 0xff, fp);
+      putc(0xc3, fp);
+    }
+      else
     if (bits == 64)
     {
       putc(0x48, fp);
@@ -154,16 +165,7 @@ int main(int argc, char *argv[])
       putc((ret_value >> 56) & 0xff, fp);
       putc(0xc3, fp);
     }
-      else
-    if (bits == 32)
-    {
-      putc(0xb8, fp);
-      putc(ret_value & 0xff, fp);
-      putc((ret_value >> 8) & 0xff, fp);
-      putc((ret_value >> 16) & 0xff, fp);
-      putc((ret_value >> 24) & 0xff, fp);
-      putc(0xc3, fp);
-    }
+
     fclose(fp);
 
     printf("Function %s modified to do nothing except return %" PRId64 ".\n", function_name, ret_value);
