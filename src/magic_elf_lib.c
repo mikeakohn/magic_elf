@@ -23,8 +23,8 @@
 #include <sys/mman.h>
 #endif
 
+#include "file_io.h"
 #include "magic_elf.h"
-#include "magic_elf_io.h"
 
 void *find_symbol_address(elf_info_t *elf_info, const char *symbol_name)
 {
@@ -105,8 +105,8 @@ long address_to_offset(elf_info_t *elf_info, long address)
 
 long find_symbol_offset(elf_info_t *elf_info, const char *symbol_name)
 {
-unsigned long offset, offset_end;
-unsigned int t;
+  unsigned long offset, offset_end;
+  unsigned int t;
 
   offset = elf_info->sym_tbl_offset;
   offset_end = offset + elf_info->sym_tbl_len;
@@ -141,11 +141,15 @@ unsigned int t;
   return -1;
 }
 
-unsigned long find_section_offset(elf_info_t *elf_info, int section, const char *sec_name, long *len)
+unsigned long find_section_offset(
+  elf_info_t *elf_info,
+  int section,
+  const char *sec_name,
+  long *len)
 {
-unsigned long offset;
-int count;
-int t;
+  unsigned long offset;
+  int count;
+  int t;
 
   if (len != NULL) { *len = 0; }
   offset = elf_info->e_shoff;
@@ -396,5 +400,4 @@ const char *get_elf_string(elf_info_t *elf_info, int index)
   return s;
 }
 #endif
-
 

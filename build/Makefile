@@ -7,9 +7,9 @@ CC=gcc
 #CC=i686-w64-mingw32-gcc
 
 OBJECTS= \
-  magic_elf_io.o \
+  file_io.o \
   magic_elf_lib.o \
-  magic_elf_print.o
+  print.o
 
 default: $(OBJECTS)
 	$(CC) -o ../magic_elf ../src/magic_elf.c $(OBJECTS) \

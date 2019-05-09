@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 
-#include "magic_elf_io.h"
+#include "file_io.h"
 
 uint16_t get_int16_be(elf_info_t *elf_info, long offset)
 {

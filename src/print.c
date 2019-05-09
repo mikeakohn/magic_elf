@@ -17,8 +17,9 @@
 #include <stdint.h>
 #include <inttypes.h>
 
+#include "file_io.h"
 #include "magic_elf.h"
-#include "magic_elf_io.h"
+#include "print.h"
 
 /* What a waste of memory if this is in the lib */
 
@@ -32,6 +33,7 @@ void print_elf_header(elf_info_t *elf_info)
   printf("Elf Header\n");
   printf("---------------------------------------------\n");
   printf("    e_ident: ");
+
   for (t = 0; t < 16; t++)
   {
     printf("%02x ", elf_info->buffer[t]);
@@ -40,20 +42,35 @@ void print_elf_header(elf_info_t *elf_info)
 
   printf("             EI_MAGIC=0x7f ELF\n");
   printf("             EI_CLASS=%d ",elf_info->buffer[4]);
+
   if (elf_info->buffer[4] == 1)
-  { printf("(32 bit)\n"); elf_info->bitwidth = 32; }
+  {
+    printf("(32 bit)\n");
+    elf_info->bitwidth = 32;
+  }
     else
   if (elf_info->buffer[4] == 2)
-  { printf("(64 bit)\n"); elf_info->bitwidth = 64; }
+  {
+    printf("(64 bit)\n");
+    elf_info->bitwidth = 64;
+  }
     else
-  { printf("(Invalid)\n"); elf_info->bitwidth = 0; }
+  {
+    printf("(Invalid)\n");
+    elf_info->bitwidth = 0;
+  }
 
   printf("             EI_DATA=%d ", elf_info->buffer[5]);
+
   if (elf_info->buffer[5] == 1)
-  { printf("(Little Endian)\n"); }
+  {
+    printf("(Little Endian)\n");
+  }
     else
   if (elf_info->buffer[5] == 2)
-  { printf("(Big Endian)\n"); }
+  {
+    printf("(Big Endian)\n");
+  }
 
   printf("             EI_VERSION=%d\n", elf_info->buffer[6]);
 
@@ -82,6 +99,7 @@ void print_elf_header(elf_info_t *elf_info)
   elf_info->file_ptr = 16;
 
   t = elf_info->read_half(elf_info);
+
   switch(t)
   {
     case 0: type_string = "(No type)"; break;
@@ -99,6 +117,7 @@ void print_elf_header(elf_info_t *elf_info)
   printf("     e_type: %02x %s\n", t, type_string);
 
   elf_info->e_machine = elf_info->read_half(elf_info);
+
   switch(elf_info->e_machine)
   {
     case 0: machine = "(None)"; break;
@@ -737,7 +756,12 @@ static void print_elf_comment(unsigned char *comment, int sh_size)
   printf("\n\n");
 }
 
-static void print_elf_symtab_32(elf_info_t *elf_info, int offset, int sh_size, int sh_entsize, int strtab_offset)
+static void print_elf_symtab_32(
+  elf_info_t *elf_info,
+  int offset,
+  int sh_size,
+  int sh_entsize,
+  int strtab_offset)
 {
   int n;
   char *strtab = (char *)elf_info->buffer + strtab_offset;
@@ -791,7 +815,12 @@ static void print_elf_symtab_32(elf_info_t *elf_info, int offset, int sh_size, i
   printf("\n\n");
 }
 
-static void print_elf_symtab_64(elf_info_t *elf_info, int offset, int sh_size, int sh_entsize, int strtab_offset)
+static void print_elf_symtab_64(
+  elf_info_t *elf_info,
+  int offset,
+  int sh_size,
+  int sh_entsize,
+  int strtab_offset)
 {
   int n;
   char *strtab = (char *)elf_info->buffer + strtab_offset;
@@ -837,7 +866,12 @@ static void print_elf_string_table(uint8_t *table, int sh_size)
   printf("\n\n");
 }
 
-static void print_elf_relocation32(elf_info_t *elf_info, int sh_offset, int sh_size, int symtab_offset, int strtab_offset)
+static void print_elf_relocation32(
+  elf_info_t *elf_info,
+  int sh_offset,
+  int sh_size,
+  int symtab_offset,
+  int strtab_offset)
 {
   const char *relocation_types[] =
   {
@@ -887,7 +921,10 @@ static void print_elf_relocation32(elf_info_t *elf_info, int sh_offset, int sh_s
   printf("\n\n");
 }
 
-static void print_elf_relocation64(elf_info_t *elf_info, int sh_offset, int sh_size)
+static void print_elf_relocation64(
+  elf_info_t *elf_info,
+  int sh_offset,
+  int sh_size)
 {
   int n = 0;
 
@@ -1145,6 +1182,4 @@ void print_elf_section_headers(elf_info_t *elf_info)
     elf_info->file_ptr = marker;
   }
 }
-
-
 

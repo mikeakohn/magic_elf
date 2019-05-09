@@ -1,16 +1,16 @@
 /*
 
-magic_elf - The ELF file format analyzer.
+  magic_elf - The ELF file format analyzer.
 
-Copyright 2009-2017 - Michael Kohn (mike@mikekohn.net)
-http://www.mikekohn.net/
+  Copyright 2009-2019 - Michael Kohn (mike@mikekohn.net)
+  http://www.mikekohn.net/
 
-This program falls under the BSD license. 
+  This program falls under the BSD license. 
 
 */
 
-#ifndef MAGIC_ELF_IO_H
-#define MAGIC_ELF_IO_H
+#ifndef MAGIC_ELF_FILE_IO_H
+#define MAGIC_ELF_FILE_IO_H
 
 #include <stdint.h>
 
@@ -56,5 +56,4 @@ uint64_t read_int64_le(elf_info_t *elf_info);
 uint8_t read_int8(elf_info_t *elf_info);
 
 #endif
-
 
