@@ -741,19 +741,53 @@ static void print_elf_symtab_32(elf_info_t *elf_info, int offset, int sh_size, i
 {
   int n;
   char *strtab = (char *)elf_info->buffer + strtab_offset;
+
   for (n = 0; n < sh_size; n = n + sh_entsize)
   {
+    int info = *(elf_info->buffer + offset + n + 12);
+    int bind = info >> 4;
+    int type = info & 0xf;
+
+    char bind_string[32];
+
+    switch(bind)
+    {
+      case 0: strcpy(bind_string, "LOCAL"); break;
+      case 1: strcpy(bind_string, "GLOBAL"); break;
+      case 2: strcpy(bind_string, "WEAK"); break;
+      case 13: strcpy(bind_string, "LOPROC"); break;
+      case 15: strcpy(bind_string, "HIPROC"); break;
+      default: sprintf(bind_string, "0x%2x", bind); break;
+    }
+
+    char type_string[32];
+
+    switch(type)
+    {
+      case 0: strcpy(type_string, "NOTYPE"); break;
+      case 1: strcpy(type_string, "OBJECT"); break;
+      case 2: strcpy(type_string, "FUNC"); break;
+      case 3: strcpy(type_string, "SECTION"); break;
+      case 4: strcpy(type_string, "FILE"); break;
+      case 13: strcpy(type_string, "LOPROC"); break;
+      case 15: strcpy(type_string, "HIPROC"); break;
+      default: sprintf(type_string, "0x%2x", type); break;
+    }
+
     strtab_offset = elf_info->get_word(elf_info, offset+n);
-    printf("   %-30s [%d] 0x%lx %d %d %d %d\n",
+
+    printf("   %-30s [%d] 0x%lx %d %s %s %d %d\n",
       strtab + strtab_offset,
       strtab_offset,
       elf_info->get_addr(elf_info, offset + n + 4),
       elf_info->get_word(elf_info, offset + n + 8),
-      *(elf_info->buffer + offset + n + 12),
+      bind_string,
+      type_string,
       *(elf_info->buffer + offset + n + 13),
       elf_info->get_half(elf_info, offset + n + 14)
     );
   }
+
   printf("\n\n");
 }
 
