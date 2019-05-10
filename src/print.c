@@ -355,7 +355,10 @@ static void print_core_prstatus(elf_info_t *elf_info)
   elf_info->file_ptr += 2;
   printf("              sigpend: %ld\n", elf_info->read_offset(elf_info));
   printf("              sighold: %ld\n", elf_info->read_offset(elf_info));
-  printf("                  pid: %d\n", elf_info->read_int32(elf_info));
+
+  int pid = elf_info->read_int32(elf_info);
+
+  printf("                  pid: %d\n", pid);
   printf("                 ppid: %d\n", elf_info->read_int32(elf_info));
   printf("                 pgrp: %d\n", elf_info->read_int32(elf_info));
   printf("                 psid: %d\n", elf_info->read_int32(elf_info));
@@ -377,6 +380,11 @@ static void print_core_prstatus(elf_info_t *elf_info)
 
   if (elf_info->e_machine == 0x3) // x86_32
   {
+    if (pid == elf_info->core_search.pid)
+    {
+      elf_info->core_search.file_offset = elf_info->file_ptr;
+    }
+
     uint32_t ebx = (uint32_t)elf_info->read_int32(elf_info);
     uint32_t ecx = (uint32_t)elf_info->read_int32(elf_info);
     uint32_t edx = (uint32_t)elf_info->read_int32(elf_info);
@@ -414,6 +422,11 @@ static void print_core_prstatus(elf_info_t *elf_info)
   }
   else if (elf_info->e_machine == 0x3e) // x86_64
   {
+    if (pid == elf_info->core_search.pid)
+    {
+      elf_info->core_search.file_offset = elf_info->file_ptr;
+    }
+
     uint64_t r15 = (uint64_t)elf_info->read_int64(elf_info);
     uint64_t r14 = (uint64_t)elf_info->read_int64(elf_info);
     uint64_t r13 = (uint64_t)elf_info->read_int64(elf_info);

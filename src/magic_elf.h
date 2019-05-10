@@ -42,6 +42,12 @@
 #define SHT_LOUSER 0x80000000
 #define SHT_HIUSER 0xffffffff
 
+struct _core_search
+{
+  int pid;
+  long file_offset;
+};
+
 typedef struct
 {
 #ifdef _WIN32
@@ -54,6 +60,7 @@ typedef struct
   uint8_t *buffer;
   int bitwidth;
   long buffer_len;
+  struct _core_search core_search;
   uint64_t file_ptr;
   uint16_t (*get_half)(void *elf_info, long offset);
   uint32_t (*get_word)(void *elf_info, long offset);
@@ -86,7 +93,7 @@ typedef struct
   unsigned long str_sym_tbl_offset;
 } elf_info_t;
 
-elf_info_t *open_elf(char *filename);
+elf_info_t *open_elf(const char *filename);
 elf_info_t *open_elf_from_mem(void *mem_ptr);
 void close_elf(elf_info_t **elf_info);
 long address_to_offset(elf_info_t *elf_info, long address);

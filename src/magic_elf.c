@@ -25,12 +25,15 @@
 int main(int argc, char *argv[])
 {
   elf_info_t *elf_info;
-  char *filename = NULL;
-  char *function_name = NULL;
-  char *symbol_name = NULL;
+  const char *filename = NULL;
+  const char *function_name = NULL;
+  const char *symbol_name = NULL;
   uint64_t ret_value = 0;
   long file_offset = 0;
   int bits = 0;
+  int pid = 0;
+  uint64_t value = 0;
+  const char *reg = NULL;
   int r;
 
   printf(
@@ -42,24 +45,39 @@ int main(int argc, char *argv[])
   {
     printf(
       "Usage: magic_elf [ options ] <filename.so>\n"
-      "    -modify <function_name> <retvalue>\n"
+      "    -modify_function <function_name> <retvalue>\n"
+      "    -modify_core <pid> <register> <value>\n"
       "    -show <symbol>\n\n");
     exit(0);
   }
 
   for (r = 1; r < argc; r++)
   {
-    if (strcmp(argv[r],"-modify") == 0)
+    if (strcmp(argv[r],"-modify_function") == 0)
     {
       if (r + 2 >= argc)
       {
-        printf("Error: -modify requires 2 arguments\n");
+        printf("Error: -modify_function requires 2 arguments\n");
         exit(1);
       }
 
       function_name = argv[r + 1];
       ret_value = atol(argv[r + 2]);
       r += 2;
+    }
+      else
+    if (strcmp(argv[r],"-modify_core") == 0)
+    {
+      if (r + 2 >= argc)
+      {
+        printf("Error: -modify_core requires 3 arguments\n");
+        exit(1);
+      }
+
+      pid = atoi(argv[r + 1]);
+      reg = argv[r + 2];
+      value = strtol(argv[r + 3], NULL, 0);
+      r += 3;
     }
       else
     if (strcmp(argv[r],"-show") == 0)
@@ -87,11 +105,13 @@ int main(int argc, char *argv[])
 
   elf_info = open_elf(filename);
 
-  if (elf_info == 0)
+  if (elf_info == NULL)
   {
     printf("Couldn't open file or not an elf\n");
     exit(0);
   }
+
+  elf_info->core_search.pid = pid;
 
   if (symbol_name == NULL && function_name == NULL)
   {
@@ -132,6 +152,20 @@ int main(int argc, char *argv[])
     }
   }
 
+  if (reg != NULL)
+  {
+    if (elf_info->core_search.file_offset != 0)
+    {
+      file_offset = elf_info->core_search.file_offset;
+    }
+      else
+    {
+      reg = NULL;
+
+      printf("Could not find pid %d.\n", pid);
+    }
+  }
+
   /* printf("offset=%ld\n", file_offset); */
 
   close_elf(&elf_info);
@@ -139,6 +173,11 @@ int main(int argc, char *argv[])
   if (function_name != NULL)
   {
     modify_function(filename, function_name, file_offset, ret_value, bits);
+  }
+
+  if (reg != NULL)
+  {
+    modify_core(filename, reg, file_offset, value, bits);
   }
 
   return 0;

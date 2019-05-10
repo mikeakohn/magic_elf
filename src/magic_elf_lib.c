@@ -299,7 +299,7 @@ printf("symbols: %lx\n", elf_info->sym_tbl_offset);
   return 0;
 }
 
-elf_info_t *open_elf(char *filename)
+elf_info_t *open_elf(const char *filename)
 {
   elf_info_t *elf_info;
   struct stat stat_buf;

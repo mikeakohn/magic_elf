@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdint.h>
 #include <inttypes.h>
 
@@ -58,6 +59,127 @@ int modify_function(
 
   printf("Function %s modified to do nothing except return %" PRId64 ".\n",
     function_name, ret_value);
+
+  return 0;
+}
+
+static char *regs32[] =
+{
+  "ebx",
+  "ecx",
+  "edx",
+  "esi",
+  "edi",
+  "ebp",
+  "eax",
+  "xds",
+  "xes",
+  "xfs",
+  "xgs",
+  "orig_eax",
+  "eip",
+  "xcs",
+  "eflags",
+  "esp",
+  "xss",
+  NULL
+};
+
+static char *regs64[] =
+{
+  "r15",
+  "r14",
+  "r13",
+  "r12",
+  "rbp",
+  "rbx",
+  "r11",
+  "r10",
+  "r9",
+  "r8",
+  "rax",
+  "rcx",
+  "rdx",
+  "rsi",
+  "rdi",
+  "orig_rax",
+  "rip",
+  "cs",
+  "eflags",
+  "rsp",
+  "ss",
+  "fs_base",
+  "gs_base",
+  "ds",
+  "es",
+  "fs",
+  "gs",
+  NULL
+};
+
+int modify_core(
+  const char *filename,
+  const char *reg,
+  long file_offset,
+  uint64_t value,
+  int bits)
+{
+  int index;
+  int bytes;
+  int n;
+
+  if (bits == 32)
+  {
+    index = 0;
+
+    while(regs32[index] != NULL)
+    {
+      if (strcasecmp(regs32[index], reg) == 0) { break; }
+      index++;
+    }
+
+    if (regs32[index] == NULL)
+    {
+      printf("Could not find register named %s\n", reg);
+      return -1;
+    }
+
+    file_offset += index * 4;
+    bytes = 4;
+  }
+    else
+  {
+    index = 0;
+
+    while(regs64[index] != NULL)
+    {
+      if (strcasecmp(regs64[index], reg) == 0) { break; }
+      index++;
+    }
+
+    if (regs64[index] == NULL)
+    {
+      printf("Could not find register named %s\n", reg);
+      return -1;
+    }
+
+    file_offset += index * 8;
+    bytes = 8;
+  }
+
+  printf("Modifying %s with 0x%lx\n", reg, value);
+
+  FILE *fp = fopen(filename, "rb+");
+
+  fseek(fp, file_offset, SEEK_SET);
+
+  for (n = 0; n < bytes; n++)
+  {
+    putc(value & 0xff, fp);
+    value = value >> 8;
+  }
+
+  fclose(fp);
 
   return 0;
 }

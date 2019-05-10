@@ -23,5 +23,12 @@ int modify_function(
   uint64_t ret_value,
   int bits);
 
+int modify_core(
+  const char *filename,
+  const char *reg,
+  long file_offset,
+  uint64_t value,
+  int bits);
+
 #endif
 
