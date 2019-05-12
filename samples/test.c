@@ -19,7 +19,7 @@ void print_hello()
 
 int add_nums(int a, int b)
 {
-  return a+b;
+  return a + b;
 }
 
 int return10_32()
