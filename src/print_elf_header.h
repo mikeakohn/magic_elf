@@ -9,11 +9,10 @@
 
 */
 
-#ifndef MAGIC_ELF_PRINT_H
-#define MAGIC_ELF_PRINT_H
+#ifndef MAGIC_ELF_PRINT_ELF_HEADER_H
+#define MAGIC_ELF_PRINT_ELF_HEADER_H
 
-void print_elf_program_headers(elf_info_t *elf_info);
-void print_elf_section_headers(elf_info_t *elf_info);
+void print_elf_header(elf_info_t *elf_info);
 
 #endif
 

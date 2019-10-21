@@ -21,6 +21,7 @@
 #include "magic_elf.h"
 #include "modify.h"
 #include "print.h"
+#include "print_elf_header.h"
 
 int main(int argc, char *argv[])
 {
@@ -39,9 +40,9 @@ int main(int argc, char *argv[])
   printf(
     "\nmagic_elf - Copyright 2009-2019 by Michael Kohn <mike@mikekohn.net>\n"
     "http://www.mikekohn.net/\n"
-    "Version: January 7, 2019\n\n");
+    "Version: October 21, 2019\n\n");
 
-  if (argc<2)
+  if (argc < 2)
   {
     printf(
       "Usage: magic_elf [ options ] <filename.so>\n"

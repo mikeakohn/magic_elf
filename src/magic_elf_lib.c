@@ -39,8 +39,9 @@ printf("offset=%lx\n",elf_info->str_sym_tbl_offset);
 printf("offset=%lx\n",elf_info->str_tbl_offset);
 */
 
-  if (elf_info->buffer[4] == 1) /* 32 bit */
+  if (elf_info->buffer[4] == 1)
   {
+    // 32 bit.
     while(offset < offset_end)
     {
       t = elf_info->get_word(elf_info, offset);
@@ -49,6 +50,7 @@ printf("offset=%lx\n",elf_info->str_tbl_offset);
       {
         return elf_info->buffer + elf_info->get_addr(elf_info,offset + 4);
       }
+
       offset += 16;
     }
   }
@@ -62,6 +64,7 @@ printf("offset=%lx\n",elf_info->str_tbl_offset);
       {
         return elf_info->buffer + elf_info->get_addr(elf_info, offset + 8);
       }
+
       offset += 24;
     }
   }
@@ -78,8 +81,9 @@ long address_to_offset(elf_info_t *elf_info, long address)
 
   for (count = 0; count < elf_info->e_shnum; count++)
   {
-    if (elf_info->buffer[4] == 1) /* 32 bit */
+    if (elf_info->buffer[4] == 1)
     {
+      // 32 bit.
       sh_address = elf_info->get_addr(elf_info, offset + 12);
       sh_size = elf_info->get_addr(elf_info, offset + 20);
       if (address >= sh_address && address < sh_address+sh_size)
@@ -111,8 +115,9 @@ long find_symbol_offset(elf_info_t *elf_info, const char *symbol_name)
   offset = elf_info->sym_tbl_offset;
   offset_end = offset + elf_info->sym_tbl_len;
 
-  if (elf_info->buffer[4] == 1) /* 32 bit */
+  if (elf_info->buffer[4] == 1)
   {
+    // 32 bit.
     while(offset < offset_end)
     {
       t = elf_info->get_word(elf_info, offset);
@@ -134,6 +139,7 @@ long find_symbol_offset(elf_info_t *elf_info, const char *symbol_name)
       {
         return address_to_offset(elf_info, elf_info->get_addr(elf_info, offset + 8));
       }
+
       offset += 24;
     }
   }
@@ -159,16 +165,26 @@ unsigned long find_section_offset(
     if (elf_info->get_word(elf_info, offset + 4) == section)
     {
       t = elf_info->get_word(elf_info, offset);
+
       if (sec_name == NULL || (t != 0 && strcmp(sec_name, (char *)elf_info->buffer + elf_info->str_tbl_offset + t) == 0))
       {
-        if (elf_info->buffer[4] == 1) /* 32 bit */
+        if (elf_info->buffer[4] == 1)
         {
-          if (len != NULL) { *len = elf_info->get_xword(elf_info, offset + 20); }
+          // 32 bit.
+          if (len != NULL)
+          {
+            *len = elf_info->get_xword(elf_info, offset + 20);
+          }
+
           return elf_info->get_offset(elf_info, offset + 16);
         }
           else
         {
-          if (len != NULL) { *len=elf_info->get_xword(elf_info, offset + 32); }
+          if (len != NULL)
+          {
+            *len=elf_info->get_xword(elf_info, offset + 32);
+          }
+
           return elf_info->get_offset(elf_info, offset + 24);
         }
       }
@@ -190,10 +206,13 @@ static int set_functs(elf_info_t *elf_info)
       elf_info->buffer[1] != 'E' ||
       elf_info->buffer[2] != 'L' ||
       elf_info->buffer[3] != 'F')
-  { return -1; }
-
-  if (elf_info->buffer[5] == 1) /* Little Endian */
   {
+    return -1;
+  }
+
+  if (elf_info->buffer[5] == 1)
+  {
+    // Little endian.
     elf_info->get_half = (void *)get_int16_le;
     elf_info->get_word = (void *)get_int32_le;
     elf_info->read_half = (void *)read_int16_le;
@@ -202,23 +221,28 @@ static int set_functs(elf_info_t *elf_info)
     elf_info->read_int32 = (void *)read_int32_le;
     elf_info->read_int64 = (void *)read_int64_le;
 
-    if (elf_info->buffer[4] == 1) /* 32 bit */
+    if (elf_info->buffer[4] == 1)
     {
+      // 32 bit.
       elf_info->read_addr = (void *)read_int32_le;
       elf_info->get_addr = (void *)get_int32_le;
     }
       else
-    if (elf_info->buffer[4] == 2) /* 64 bit */
+    if (elf_info->buffer[4] == 2)
     {
+      // 64 bit.
       elf_info->read_addr = (void *)read_int64_le;
       elf_info->get_addr = (void *)get_int64_le;
     }
       else
-    { return -3; }
+    {
+      return -3;
+    }
   }
     else
-  if (elf_info->buffer[5] == 2) /* Big Endian */
+  if (elf_info->buffer[5] == 2)
   {
+    // Big endian
     elf_info->get_half = (void *)get_int16_be;
     elf_info->get_word = (void *)get_int32_be;
     elf_info->read_half = (void *)read_int16_be;
@@ -227,22 +251,28 @@ static int set_functs(elf_info_t *elf_info)
     elf_info->read_int32 = (void *)read_int32_be;
     elf_info->read_int64 = (void *)read_int64_be;
 
-    if (elf_info->buffer[4] == 1) /* 32 bit */
+    if (elf_info->buffer[4] == 1)
     {
+      // 32 bit.
       elf_info->read_addr = (void *)read_int32_be;
       elf_info->get_addr = (void *)get_int32_be;
     }
       else
-    if (elf_info->buffer[4] == 2) /* 64 bit */
+    if (elf_info->buffer[4] == 2)
     {
+      // 64 bit.
       elf_info->read_addr = (void *)read_int64_be;
       elf_info->get_addr = (void *)get_int64_be;
     }
       else
-    { return -3; }
+    {
+      return -3;
+    }
   }
     else
-  { return -2; }
+  {
+    return -2;
+  }
 
   elf_info->read_offset = elf_info->read_addr;
   elf_info->get_offset = elf_info->get_addr;
@@ -250,8 +280,9 @@ static int set_functs(elf_info_t *elf_info)
   elf_info->get_xword = elf_info->get_addr;
   elf_info->read_int8 = (void *)read_int8;
 
-  if (elf_info->buffer[4] == 1) /* 32 bit */
+  if (elf_info->buffer[4] == 1)
   {
+    // 32 bit.
     elf_info->e_entry = elf_info->get_addr(elf_info, 8 + 16);
     elf_info->e_phoff = elf_info->get_offset(elf_info, 12 + 16);
     elf_info->e_shoff = elf_info->get_offset(elf_info, 16 + 16);

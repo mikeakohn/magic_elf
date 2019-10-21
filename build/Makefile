@@ -10,7 +10,8 @@ OBJECTS= \
   file_io.o \
   magic_elf_lib.o \
   modify.o \
-  print.o
+  print.o \
+  print_elf_header.o
 
 default: $(OBJECTS)
 	$(CC) -o ../magic_elf ../src/magic_elf.c $(OBJECTS) \
