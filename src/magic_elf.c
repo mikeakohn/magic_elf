@@ -20,8 +20,9 @@
 
 #include "magic_elf.h"
 #include "modify.h"
-#include "print.h"
 #include "print_elf_header.h"
+#include "print_program_headers.h"
+#include "print_section_headers.h"
 
 int main(int argc, char *argv[])
 {

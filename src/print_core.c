@@ -19,7 +19,7 @@
 
 #include "file_io.h"
 #include "magic_elf.h"
-#include "print.h"
+//#include "print_program_headers.h"
 
 static int find_program_header(elf_info_t *elf_info, uint64_t address)
 {

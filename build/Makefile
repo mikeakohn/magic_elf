@@ -11,9 +11,10 @@ OBJECTS= \
   file_io.o \
   magic_elf_lib.o \
   modify.o \
-  print.o \
   print_core.o \
   print_elf_header.o \
+  print_program_headers.o \
+  print_section_headers.o \
   set_functions.o
 
 default: $(OBJECTS)
