@@ -7,11 +7,13 @@ CC=gcc
 #CC=i686-w64-mingw32-gcc
 
 OBJECTS= \
+  elf_info.o \
   file_io.o \
   magic_elf_lib.o \
   modify.o \
   print.o \
-  print_elf_header.o
+  print_elf_header.o \
+  set_functions.o
 
 default: $(OBJECTS)
 	$(CC) -o ../magic_elf ../src/magic_elf.c $(OBJECTS) \
