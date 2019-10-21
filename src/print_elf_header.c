@@ -39,7 +39,7 @@ void print_elf_header(elf_info_t *elf_info)
   printf("\n");
 
   printf("             EI_MAGIC=0x7f ELF\n");
-  printf("             EI_CLASS=%d ",elf_info->buffer[4]);
+  printf("             EI_CLASS=%d ", elf_info->buffer[4]);
 
   if (elf_info->buffer[4] == 1)
   {

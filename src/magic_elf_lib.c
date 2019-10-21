@@ -30,9 +30,8 @@ printf("offset=%lx\n",elf_info->str_sym_tbl_offset);
 printf("offset=%lx\n",elf_info->str_tbl_offset);
 */
 
-  if (elf_info->buffer[4] == 1)
+  if (elf_info->bitwidth == 32)
   {
-    // 32 bit.
     while(offset < offset_end)
     {
       t = elf_info->get_word(elf_info, offset);
@@ -72,9 +71,8 @@ long address_to_offset(elf_info_t *elf_info, long address)
 
   for (count = 0; count < elf_info->e_shnum; count++)
   {
-    if (elf_info->buffer[4] == 1)
+    if (elf_info->bitwidth == 32)
     {
-      // 32 bit.
       sh_address = elf_info->get_addr(elf_info, offset + 12);
       sh_size = elf_info->get_addr(elf_info, offset + 20);
       if (address >= sh_address && address < sh_address+sh_size)
@@ -106,9 +104,8 @@ long find_symbol_offset(elf_info_t *elf_info, const char *symbol_name)
   offset = elf_info->sym_tbl_offset;
   offset_end = offset + elf_info->sym_tbl_len;
 
-  if (elf_info->buffer[4] == 1)
+  if (elf_info->bitwidth == 32)
   {
-    // 32 bit.
     while(offset < offset_end)
     {
       t = elf_info->get_word(elf_info, offset);
@@ -159,9 +156,8 @@ unsigned long find_section_offset(
 
       if (sec_name == NULL || (t != 0 && strcmp(sec_name, (char *)elf_info->buffer + elf_info->str_tbl_offset + t) == 0))
       {
-        if (elf_info->buffer[4] == 1)
+        if (elf_info->bitwidth == 32)
         {
-          // 32 bit.
           if (len != NULL)
           {
             *len = elf_info->get_xword(elf_info, offset + 20);

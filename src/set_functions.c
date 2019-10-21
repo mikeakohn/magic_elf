@@ -43,16 +43,14 @@ int set_functions(elf_info_t *elf_info)
     elf_info->read_int32 = (void *)read_int32_le;
     elf_info->read_int64 = (void *)read_int64_le;
 
-    if (elf_info->buffer[4] == 1)
+    if (elf_info->bitwidth == 32)
     {
-      // 32 bit.
       elf_info->read_addr = (void *)read_int32_le;
       elf_info->get_addr = (void *)get_int32_le;
     }
       else
-    if (elf_info->buffer[4] == 2)
+    if (elf_info->bitwidth == 64)
     {
-      // 64 bit.
       elf_info->read_addr = (void *)read_int64_le;
       elf_info->get_addr = (void *)get_int64_le;
     }
@@ -73,16 +71,14 @@ int set_functions(elf_info_t *elf_info)
     elf_info->read_int32 = (void *)read_int32_be;
     elf_info->read_int64 = (void *)read_int64_be;
 
-    if (elf_info->buffer[4] == 1)
+    if (elf_info->bitwidth == 32)
     {
-      // 32 bit.
       elf_info->read_addr = (void *)read_int32_be;
       elf_info->get_addr = (void *)get_int32_be;
     }
       else
-    if (elf_info->buffer[4] == 2)
+    if (elf_info->bitwidth == 64)
     {
-      // 64 bit.
       elf_info->read_addr = (void *)read_int64_be;
       elf_info->get_addr = (void *)get_int64_be;
     }
@@ -102,9 +98,8 @@ int set_functions(elf_info_t *elf_info)
   elf_info->get_xword = elf_info->get_addr;
   elf_info->read_int8 = (void *)read_int8;
 
-  if (elf_info->buffer[4] == 1)
+  if (elf_info->bitwidth == 32)
   {
-    // 32 bit.
     elf_info->e_entry = elf_info->get_addr(elf_info, 8 + 16);
     elf_info->e_phoff = elf_info->get_offset(elf_info, 12 + 16);
     elf_info->e_shoff = elf_info->get_offset(elf_info, 16 + 16);
