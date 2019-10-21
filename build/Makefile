@@ -12,6 +12,7 @@ OBJECTS= \
   magic_elf_lib.o \
   modify.o \
   print.o \
+  print_core.o \
   print_elf_header.o \
   set_functions.o
 
