@@ -22,57 +22,6 @@
 #include "print.h"
 #include "print_core.h"
 
-int find_program_header(elf_info_t *elf_info, uint64_t address)
-{
-  int count;
-  int program_header = -1;
-  long marker = elf_info->file_ptr;
-
-  //uint32_t p_type;
-  //uint32_t p_flags;
-  //uint64_t p_offset;
-  uint64_t p_vaddr;
-  //uint64_t p_paddr;
-  //uint64_t p_filesz;
-  uint64_t p_memsz;
-
-  for(count = 0; count < elf_info->e_phnum; count++)
-  {
-    elf_info->file_ptr = elf_info->e_phoff + (elf_info->e_phentsize * count);
-
-    if (elf_info->bitwidth == 32)
-    {
-      elf_info->read_word(elf_info); // p_type
-      elf_info->read_offset(elf_info); // p_offset
-      p_vaddr = elf_info->read_addr(elf_info);
-      elf_info->read_addr(elf_info); // p_addr
-      elf_info->read_word(elf_info); // p_filesz
-      p_memsz = elf_info->read_word(elf_info);
-    }
-    else
-    {
-      elf_info->read_word(elf_info); // p_type
-      elf_info->read_word(elf_info); // p_flags
-      elf_info->read_offset(elf_info); // p_offset
-      p_vaddr = elf_info->read_addr(elf_info);
-      elf_info->read_addr(elf_info); // p_addr
-      elf_info->read_xword(elf_info); // p_filesz
-      p_memsz = elf_info->read_xword(elf_info);
-    }
-
-    //printf("%d] %lx %lx %lx\n", count, address, p_vaddr, p_memsz);
-    if (address >= p_vaddr && address < p_vaddr + p_memsz)
-    {
-      program_header = count;
-      break;
-    }
-  }
-
-  elf_info->file_ptr = marker;
-
-  return program_header;
-}
-
 const char *get_program_header_type(int type)
 {
   const char *types[] =
