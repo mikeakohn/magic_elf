@@ -167,7 +167,7 @@ int modify_core(
     bytes = 8;
   }
 
-  printf("Modifying %s with 0x%lx\n", reg, value);
+  printf("Modifying %s with 0x%" PRIx64 "\n", reg, value);
 
   FILE *fp = fopen(filename, "rb+");
 

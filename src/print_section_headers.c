@@ -25,13 +25,19 @@
 static void print_elf_comment(unsigned char *comment, int sh_size)
 {
   int n;
+
   for (n = 0; n < sh_size; n++)
   {
     if (comment[n] >= 32 && comment[n] < 127)
-    { printf("%c", comment[n]); }
+    {
+      printf("%c", comment[n]);
+    }
       else
-    { printf("[%02x]", comment[n]); }
+    {
+      printf("[%02x]", comment[n]);
+    }
   }
+
   printf("\n\n");
 }
 
@@ -216,7 +222,7 @@ static void print_elf_relocation64(
     uint64_t sym = info >> 8;
     int type = info & 0xff;
 
-    printf("0x%08lx 0x%08lx %d\n", offset, sym, type);
+    printf("0x%08" PRIx64 " 0x%08" PRIx64 " %d\n", offset, sym, type);
 
     n = n + 16;
   }
