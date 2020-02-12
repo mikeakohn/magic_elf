@@ -32,6 +32,8 @@ int set_functions(elf_info_t *elf_info)
     return -1;
   }
 
+  elf_info->bitwidth = elf_info->buffer[4] == 1 ? 32 : 64;
+
   if (elf_info->buffer[5] == 1)
   {
     // Little endian.

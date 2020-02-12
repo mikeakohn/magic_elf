@@ -58,7 +58,7 @@ elf_info_t *open_elf(const char *filename)
   if (set_functions(elf_info) != 0)
   {
     close_elf(&elf_info);
-    return 0;
+    return NULL;
   }
 
   return elf_info;
