@@ -39,9 +39,9 @@ int main(int argc, char *argv[])
   int r;
 
   printf(
-    "\nmagic_elf - Copyright 2009-2019 by Michael Kohn <mike@mikekohn.net>\n"
+    "\nmagic_elf - Copyright 2009-2020 by Michael Kohn <mike@mikekohn.net>\n"
     "http://www.mikekohn.net/\n"
-    "Version: October 21, 2019\n\n");
+    "Version: February 12, 2020\n\n");
 
   if (argc < 2)
   {
