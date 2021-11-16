@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
   printf(
     "\nmagic_elf - Copyright 2009-2020 by Michael Kohn <mike@mikekohn.net>\n"
     "http://www.mikekohn.net/\n"
-    "Version: February 12, 2020\n\n");
+    "Version: November 16, 2021\n\n");
 
   if (argc < 2)
   {
