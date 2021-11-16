@@ -107,7 +107,7 @@ void print_elf_program_headers(elf_info_t *elf_info)
       uint32_t align_mask = elf_info->bitwidth == 32 ? 3 : 7;
       int namesz_align;
       int descsz_align;
-      int bytes_used = 0;
+      uint64_t bytes_used = 0;
       char name[1024];
       elf_info->file_ptr = p_offset;
 
