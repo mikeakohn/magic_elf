@@ -2,7 +2,7 @@
 
   magic_elf - The ELF file format analyzer.
 
-  Copyright 2009-2019 - Michael Kohn (mike@mikekohn.net)
+  Copyright 2009-2021 - Michael Kohn (mike@mikekohn.net)
   http://www.mikekohn.net/
 
   This program falls under the BSD license.
@@ -177,7 +177,7 @@ static void print_elf_relocation32(
 
   printf("Offset     Type     Symbol\n");
 
-  while(n < sh_size)
+  while (n < sh_size)
   {
     uint32_t offset = elf_info->get_addr(elf_info, sh_offset + n);
     uint32_t info = elf_info->get_word(elf_info, sh_offset + n + 4);
@@ -215,7 +215,7 @@ static void print_elf_relocation64(
 
   printf("%12s %12s type\n", "Offset", "Sym");
 
-  while(n < sh_size)
+  while (n < sh_size)
   {
     uint64_t offset = elf_info->get_addr(elf_info, sh_offset + n);
     uint64_t info = elf_info->get_word(elf_info, sh_offset + n + 8);

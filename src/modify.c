@@ -2,7 +2,7 @@
 
   magic_elf - The ELF file format analyzer.
 
-  Copyright 2009-2019 - Michael Kohn (mike@mikekohn.net)
+  Copyright 2009-2021 - Michael Kohn (mike@mikekohn.net)
   http://www.mikekohn.net/
 
   This program falls under the BSD license.
@@ -132,7 +132,7 @@ int modify_core(
   {
     index = 0;
 
-    while(regs32[index] != NULL)
+    while (regs32[index] != NULL)
     {
       if (strcasecmp(regs32[index], reg) == 0) { break; }
       index++;
@@ -151,7 +151,7 @@ int modify_core(
   {
     index = 0;
 
-    while(regs64[index] != NULL)
+    while (regs64[index] != NULL)
     {
       if (strcasecmp(regs64[index], reg) == 0) { break; }
       index++;

@@ -2,7 +2,7 @@
 
   magic_elf - The ELF file format analyzer.
 
-  Copyright 2009-2019 - Michael Kohn (mike@mikekohn.net)
+  Copyright 2009-2021 - Michael Kohn (mike@mikekohn.net)
   http://www.mikekohn.net/
 
   This program falls under the BSD license.
@@ -35,7 +35,7 @@ static int find_program_header(elf_info_t *elf_info, uint64_t address)
   //uint64_t p_filesz;
   uint64_t p_memsz;
 
-  for(count = 0; count < elf_info->e_phnum; count++)
+  for (count = 0; count < elf_info->e_phnum; count++)
   {
     elf_info->file_ptr = elf_info->e_phoff + (elf_info->e_phentsize * count);
 

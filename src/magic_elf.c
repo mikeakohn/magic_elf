@@ -2,7 +2,7 @@
 
   magic_elf - The ELF file format analyzer.
 
-  Copyright 2009-2019 - Michael Kohn (mike@mikekohn.net)
+  Copyright 2009-2021 - Michael Kohn (mike@mikekohn.net)
   http://www.mikekohn.net/
 
   This program falls under the BSD license.
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
   int r;
 
   printf(
-    "\nmagic_elf - Copyright 2009-2020 by Michael Kohn <mike@mikekohn.net>\n"
+    "\nmagic_elf - Copyright 2009-2021 by Michael Kohn <mike@mikekohn.net>\n"
     "http://www.mikekohn.net/\n"
     "Version: November 16, 2021\n\n");
 

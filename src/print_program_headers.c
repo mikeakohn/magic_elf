@@ -2,7 +2,7 @@
 
   magic_elf - The ELF file format analyzer.
 
-  Copyright 2009-2019 - Michael Kohn (mike@mikekohn.net)
+  Copyright 2009-2021 - Michael Kohn (mike@mikekohn.net)
   http://www.mikekohn.net/
 
   This program falls under the BSD license.
@@ -59,7 +59,7 @@ void print_elf_program_headers(elf_info_t *elf_info)
 
   printf("Elf Program Headers (count=%d)\n\n", elf_info->e_phnum);
 
-  for(count = 0; count < elf_info->e_phnum; count++)
+  for (count = 0; count < elf_info->e_phnum; count++)
   {
     marker = elf_info->file_ptr + elf_info->e_phentsize;
 
@@ -113,7 +113,7 @@ void print_elf_program_headers(elf_info_t *elf_info)
 
       printf("\n");
 
-      while(bytes_used < p_filesz)
+      while (bytes_used < p_filesz)
       {
         //printf("bytes_used=%d / %ld\n", bytes_used, p_filesz);
         namesz = elf_info->read_word(elf_info);
