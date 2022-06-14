@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 void print_hello()
 {
@@ -27,7 +28,7 @@ int return10_32()
   return 10;
 }
 
-long return_64()
+uint64_t return_64()
 {
   return 0xffffffff1;
 }
