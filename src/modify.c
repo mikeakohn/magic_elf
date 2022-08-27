@@ -2,8 +2,8 @@
 
   magic_elf - The ELF file format analyzer.
 
-  Copyright 2009-2021 - Michael Kohn (mike@mikekohn.net)
-  http://www.mikekohn.net/
+  Copyright 2009-2022 - Michael Kohn (mike@mikekohn.net)
+  https://www.mikekohn.net/
 
   This program falls under the BSD license.
 

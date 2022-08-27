@@ -2,8 +2,8 @@
 
   magic_elf - The ELF file format analyzer.
 
-  Copyright 2009-2021 - Michael Kohn (mike@mikekohn.net)
-  http://www.mikekohn.net/
+  Copyright 2009-2022 - Michael Kohn (mike@mikekohn.net)
+  https://www.mikekohn.net/
 
   This program falls under the BSD license.
 
@@ -18,6 +18,7 @@
 #include <inttypes.h>
 #include <string.h>
 
+#include "extract_java.h"
 #include "magic_elf.h"
 #include "modify.h"
 #include "print_elf_header.h"
@@ -36,12 +37,13 @@ int main(int argc, char *argv[])
   int pid = 0;
   uint64_t value = 0;
   const char *reg = NULL;
+  uint8_t run_extract_java = 0;
   int r;
 
   printf(
-    "\nmagic_elf - Copyright 2009-2021 by Michael Kohn <mike@mikekohn.net>\n"
-    "http://www.mikekohn.net/\n"
-    "Version: November 16, 2021\n\n");
+    "\nmagic_elf - Copyright 2009-2022 by Michael Kohn <mike@mikekohn.net>\n"
+    "https://www.mikekohn.net/\n"
+    "Version: August 26, 2022\n\n");
 
   if (argc < 2)
   {
@@ -49,7 +51,8 @@ int main(int argc, char *argv[])
       "Usage: magic_elf [ options ] <filename.so>\n"
       "    -modify_function <function_name> <retvalue>\n"
       "    -modify_core <pid> <register> <value>\n"
-      "    -show <symbol>\n\n");
+      "    -show <symbol>\n"
+      "    -extract_java\n\n");
     exit(0);
   }
 
@@ -94,6 +97,11 @@ int main(int argc, char *argv[])
       r++;
     }
       else
+    if (strcmp(argv[r],"-extract_java") == 0)
+    {
+      run_extract_java = 1;
+    }
+      else
     if (argv[r][0] == '-')
     {
       printf("Unknown option '%s'\n", argv[r]);
@@ -103,6 +111,12 @@ int main(int argc, char *argv[])
     {
       filename = argv[r];
     }
+  }
+
+  if (run_extract_java == 1)
+  {
+    extract_java(filename);
+    exit(0);
   }
 
   elf_info = open_elf(filename);

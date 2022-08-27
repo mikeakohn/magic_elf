@@ -9,12 +9,14 @@
 
 */
 
-#ifndef MAGIC_ELF_SET_FUNCTIONS_H
-#define MAGIC_ELF_SET_FUNCTIONS_H
+#ifndef MAGIC_ELF_EXTRACT_JAVA_H
+#define MAGIC_ELF_EXTRACT_JAVA_H
 
-#include "elf_info.h"
+#include <stdint.h>
 
-int set_functions(elf_info_t *elf_info);
+#include "magic_elf.h"
+
+void extract_java(const char *filename);
 
 #endif
 

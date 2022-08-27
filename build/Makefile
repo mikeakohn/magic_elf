@@ -8,6 +8,7 @@ CC=gcc
 
 OBJECTS= \
   elf_info.o \
+  extract_java.o \
   file_io.o \
   magic_elf_lib.o \
   modify.o \
