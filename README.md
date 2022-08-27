@@ -9,11 +9,13 @@ magic_elf can do the following:
   values instead of running the original code.
 
 * Modify saved registers in core files including the stack pointer
-  and instruction register.  This can be useful for debugging core
+  and instruction register. This can be useful for debugging core
   files in gdb where the upper frames of the stack can't resolve
   properly to loaded (or non-existent) shared libraries.
 
+* Extract Java .class files from core dumps generated from JNI crashes.
+
 For info on this program:
 
-http://www.mikekohn.net/file_formats/magic_elf.php
+https://www.mikekohn.net/file_formats/magic_elf.php
 
