@@ -2,7 +2,7 @@
 
   magic_elf - The ELF file format analyzer.
 
-  Copyright 2009-2022 - Michael Kohn (mike@mikekohn.net)
+  Copyright 2009-2023 - Michael Kohn (mike@mikekohn.net)
   https://www.mikekohn.net/
 
   This program falls under the BSD license.
@@ -14,18 +14,73 @@
 #include <string.h>
 #include <stdint.h>
 
-struct _code
-{
-  int length;
-  int size;
-  uint8_t *data;
-  uint16_t class_name;
-  uint32_t *constant_index;
-  int constant_index_size;
-  long start;
-};
+#include "Java.h"
 
-static uint16_t get_uint8(FILE *in, struct _code *code)
+void Java::extract(const char *filename)
+{
+  FILE *in;
+  const int cafebabe[] = { 0xca, 0xfe, 0xba, 0xbe };
+  int ptr = 0, ch;
+  uint64_t progress = 0;
+  Code code;
+
+  memset(&code, 0, sizeof(code));
+
+  in = fopen(filename, "rb");
+
+  if (in == NULL)
+  {
+    printf("Error: Cannot open file %s\n", filename);
+    exit(1);
+  }
+
+  code.size = 65536;
+  code.data = (uint8_t *)malloc(code.size);
+
+  while (1)
+  {
+    ch = getc(in);
+    if (ch == EOF) { break; }
+
+    if (ch == cafebabe[ptr++])
+    {
+      if (ptr == 4)
+      {
+        code.start = ftell(in) - 4;
+        ptr = 0;
+        code.length = 0;
+
+        if (extract_header(in, &code) != 0) { continue; }
+        if (extract_constants(in, &code) != 0) { continue; }
+        if (extract_info(in, &code) != 0) { continue; }
+        if (extract_interfaces(in, &code) != 0) { continue; }
+        if (extract_fields(in, &code) != 0) { continue; }
+        if (extract_methods(in, &code) != 0) { continue; }
+        if (extract_attributes(in, &code) != 0) { continue; }
+
+        dump(&code);
+      }
+    }
+    else
+    {
+      ptr = 0;
+    }
+
+    progress++;
+
+    if ((progress % 10000000) == 0)
+    {
+      printf("%ldMB %ld\n", progress / 1024 / 1024, ftell(in));
+    }
+  }
+
+  free(code.constant_index);
+  free(code.data);
+
+  fclose(in);
+}
+
+uint16_t Java::get_uint8(FILE *in, Code *code)
 {
   int ptr = code->length;
 
@@ -40,7 +95,7 @@ static uint16_t get_uint8(FILE *in, struct _code *code)
   return code->data[ptr + 0];
 }
 
-static uint16_t get_uint16(FILE *in, struct _code *code)
+uint16_t Java::get_uint16(FILE *in, Code *code)
 {
   int ptr = code->length;
 
@@ -56,7 +111,7 @@ static uint16_t get_uint16(FILE *in, struct _code *code)
   return (code->data[ptr + 0] << 8) | code->data[ptr + 1];
 }
 
-static uint32_t get_uint32(FILE *in, struct _code *code)
+uint32_t Java::get_uint32(FILE *in, Code *code)
 {
   int ptr = code->length;
 
@@ -77,7 +132,7 @@ static uint32_t get_uint32(FILE *in, struct _code *code)
           code->data[ptr + 3];
 }
 
-static uint64_t get_uint64(FILE *in, struct _code *code)
+uint64_t Java::get_uint64(FILE *in, Code *code)
 {
   int n;
 
@@ -96,7 +151,7 @@ static uint64_t get_uint64(FILE *in, struct _code *code)
   return 0;
 }
 
-static void copy_attribute(FILE *in, struct _code *code)
+void Java::copy_attribute(FILE *in, Code *code)
 {
   uint32_t n;
 
@@ -109,7 +164,7 @@ static void copy_attribute(FILE *in, struct _code *code)
   }
 }
 
-static int extract_header(FILE *in, struct _code *code)
+int Java::extract_header(FILE *in, Code *code)
 {
   code->length = 10;
   code->data[0] = 0xca;
@@ -124,7 +179,7 @@ static int extract_header(FILE *in, struct _code *code)
   return 0;
 }
 
-static int extract_constants(FILE *in, struct _code *code)
+int Java::extract_constants(FILE *in, Code *code)
 {
   int constant_count = (code->data[8] << 8) | code->data[9];
   int length, n, r;
@@ -225,7 +280,7 @@ static int extract_constants(FILE *in, struct _code *code)
   return 0;
 }
 
-static int extract_info(FILE *in, struct _code *code)
+int Java::extract_info(FILE *in, Code *code)
 {
   int offset;
 
@@ -239,7 +294,7 @@ static int extract_info(FILE *in, struct _code *code)
   return 0;
 }
 
-static int extract_interfaces(FILE *in, struct _code *code)
+int Java::extract_interfaces(FILE *in, Code *code)
 {
   int interface_count = get_uint16(in, code);
   int n;
@@ -252,7 +307,7 @@ static int extract_interfaces(FILE *in, struct _code *code)
   return 0;
 }
 
-static int extract_fields(FILE *in, struct _code *code)
+int Java::extract_fields(FILE *in, Code *code)
 {
   int field_count = get_uint16(in, code);
   int n, r;
@@ -273,7 +328,7 @@ static int extract_fields(FILE *in, struct _code *code)
   return 0;
 }
 
-static int extract_methods(FILE *in, struct _code *code)
+int Java::extract_methods(FILE *in, Code *code)
 {
   int method_count = get_uint16(in, code);
   int n, r;
@@ -294,7 +349,7 @@ static int extract_methods(FILE *in, struct _code *code)
   return 0;
 }
 
-static int extract_attributes(FILE *in, struct _code *code)
+int Java::extract_attributes(FILE *in, Code *code)
 {
   int attribute_count = get_uint16(in, code);
   int n;
@@ -307,7 +362,7 @@ static int extract_attributes(FILE *in, struct _code *code)
   return 0;
 }
 
-static int dump(struct _code *code)
+int Java::dump(Code *code)
 {
   int offset = code->constant_index[code->class_name];
   int length = (code->data[offset + 1] << 8) | code->data[offset + 2];
@@ -339,69 +394,5 @@ static int dump(struct _code *code)
   fclose(out);
 
   return 0;
-}
-
-void extract_java(const char *filename)
-{
-  FILE *in;
-  const int cafebabe[] = { 0xca, 0xfe, 0xba, 0xbe };
-  int ptr = 0, ch;
-  uint64_t progress = 0;
-  struct _code code;
-
-  memset(&code, 0, sizeof(code));
-
-  in = fopen(filename, "rb");
-
-  if (in == NULL)
-  {
-    printf("Error: Cannot open file %s\n", filename);
-    exit(1);
-  }
-
-  code.size = 65536;
-  code.data = (uint8_t *)malloc(code.size);
-
-  while (1)
-  {
-    ch = getc(in);
-    if (ch == EOF) { break; }
-
-    if (ch == cafebabe[ptr++])
-    {
-      if (ptr == 4)
-      {
-        code.start = ftell(in) - 4;
-        ptr = 0;
-        code.length = 0;
-
-        if (extract_header(in, &code) != 0) { continue; }
-        if (extract_constants(in, &code) != 0) { continue; }
-        if (extract_info(in, &code) != 0) { continue; }
-        if (extract_interfaces(in, &code) != 0) { continue; }
-        if (extract_fields(in, &code) != 0) { continue; }
-        if (extract_methods(in, &code) != 0) { continue; }
-        if (extract_attributes(in, &code) != 0) { continue; }
-
-        dump(&code);
-      }
-    }
-    else
-    {
-      ptr = 0;
-    }
-
-    progress++;
-
-    if ((progress % 10000000) == 0)
-    {
-      printf("%ldMB %ld\n", progress / 1024 / 1024, ftell(in));
-    }
-  }
-
-  free(code.constant_index);
-  free(code.data);
-
-  fclose(in);
 }
 

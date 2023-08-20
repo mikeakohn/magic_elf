@@ -7,9 +7,6 @@
 
   This program falls under the BSD license.
 
-  Useful page: http://www.sco.com/developers/gabi/latest/contents.html
-               http://www.iecc.com/linker/linker10.html
-
 */
 
 #include <stdio.h>
@@ -18,32 +15,28 @@
 #include <inttypes.h>
 #include <string.h>
 
-#include "extract_java.h"
-#include "magic_elf.h"
-#include "modify.h"
-#include "print_elf_header.h"
-#include "print_program_headers.h"
-#include "print_section_headers.h"
+#include "Display.h"
+#include "Elf.h"
+#include "Java.h"
+#include "Modify.h"
 
 int main(int argc, char *argv[])
 {
-  elf_info_t *elf_info;
+  Elf *elf;
   const char *filename = NULL;
   const char *function_name = NULL;
   const char *symbol_name = NULL;
   uint64_t ret_value = 0;
-  long file_offset = 0;
-  int bits = 0;
-  int pid = 0;
+  uint32_t pid = 0;
   uint64_t value = 0;
   const char *reg = NULL;
-  uint8_t run_extract_java = 0;
+  bool run_java_extract = false;
   int r;
 
   printf(
     "\nmagic_elf - Copyright 2009-2023 by Michael Kohn <mike@mikekohn.net>\n"
     "https://www.mikekohn.net/\n"
-    "Version: June 27, 2023\n\n");
+    "Version: August 20, 2023\n\n");
 
   if (argc < 2)
   {
@@ -93,13 +86,13 @@ int main(int argc, char *argv[])
         exit(1);
       }
 
-      symbol_name = argv[r+1];
+      symbol_name = argv[r + 1];
       r++;
     }
       else
     if (strcmp(argv[r],"-extract_java") == 0)
     {
-      run_extract_java = 1;
+      run_java_extract = true;
     }
       else
     if (argv[r][0] == '-')
@@ -113,88 +106,64 @@ int main(int argc, char *argv[])
     }
   }
 
-  if (run_extract_java == 1)
+  if (filename == nullptr)
   {
-    extract_java(filename);
+    printf("Error: No filename selected.\n");
+    exit(-1);
+  }
+
+  if (run_java_extract)
+  {
+    Java::extract(filename);
     exit(0);
   }
 
-  elf_info = open_elf(filename);
+  if (reg != NULL)
+  {
+    int err = Modify::set_core_register_value(filename, reg, value, pid);
 
-  if (elf_info == NULL)
+    if (err != 0)
+    {
+      printf("Error: Could not modify register.\n");
+    }
+
+    exit(err);
+  }
+
+  if (function_name != NULL)
+  {
+    int err = Modify::modify_function(filename, function_name, ret_value);
+
+    if (err != 0)
+    {
+      printf("Error: Could not modify function.\n");
+    }
+
+    exit(err);
+  }
+
+  if (symbol_name != NULL)
+  {
+    Display::symbol_value(filename, symbol_name);
+    exit(0);
+  }
+
+  elf = Elf::open_elf(filename);
+
+  if (elf == NULL)
   {
     printf("Couldn't open file or not an elf\n");
     exit(0);
   }
 
-  elf_info->core_search.pid = pid;
-
   if (symbol_name == NULL && function_name == NULL)
   {
-    print_elf_header(elf_info);
-    print_elf_program_headers(elf_info);
-    print_elf_section_headers(elf_info);
+    elf->print_header();
+    elf->print_program_headers();
+    elf->print_section_headers();
   }
 
-  if (function_name != NULL)
-  {
-    file_offset = find_symbol_offset(elf_info, function_name);
-
-    if (file_offset == -1)
-    {
-      printf("Error: Can't find function '%s'.\n", function_name);
-    }
-      else
-    {
-      bits = 0;
-    }
-
-    bits = elf_info->buffer[4] == 1 ? 32 : 64;
-  }
-
-  if (symbol_name != NULL)
-  {
-    file_offset = find_symbol_offset(elf_info,symbol_name);
-
-    if (file_offset == -1)
-    {
-      printf("Error: Can't find symbol '%s'.\n", symbol_name);
-      function_name = NULL;
-    }
-      else
-    {
-      printf("%s=%s\n", symbol_name,
-         elf_info->buffer + address_to_offset(elf_info, elf_info->get_addr(elf_info, file_offset)));
-    }
-  }
-
-  if (reg != NULL)
-  {
-    if (elf_info->core_search.file_offset != 0)
-    {
-      file_offset = elf_info->core_search.file_offset;
-    }
-      else
-    {
-      reg = NULL;
-
-      printf("Could not find pid %d.\n", pid);
-    }
-  }
-
-  /* printf("offset=%ld\n", file_offset); */
-
-  close_elf(&elf_info);
-
-  if (function_name != NULL)
-  {
-    modify_function(filename, function_name, file_offset, ret_value, bits);
-  }
-
-  if (reg != NULL)
-  {
-    modify_core(filename, reg, file_offset, value, bits);
-  }
+  delete elf;
 
   return 0;
 }
