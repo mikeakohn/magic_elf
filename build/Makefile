@@ -1,7 +1,7 @@
 VPATH=../src:../tests
 
 DEBUG=-DDEBUG -g
-CFLAGS=-Wall -O3 $(DEBUG)
+CFLAGS=-Wall -O3 -std=c++11 $(DEBUG)
 LDFLAGS=
 CC=gcc
 CXX=g++

@@ -114,8 +114,8 @@ int Modify::set_core_register_value(
     {
       uint64_t offset = elf->get_core_registers_from_note(program, pid);
 
-      //printf("     file_offset=%ld\n", offset + reg_offset);
-      printf("   current_value=0x%lx\n", elf->read_reg(offset + reg_offset));
+      printf("   current_value=0x%" PRIx64 "\n",
+        elf->read_reg(offset + reg_offset));
 
       if (elf->set_writable() != 0)
       {
@@ -125,7 +125,8 @@ int Modify::set_core_register_value(
 
       elf->write_reg(offset + reg_offset, value);
       elf->set_readonly();
-      printf("       new_value=0x%lx\n", elf->read_reg(offset + reg_offset));
+      printf("       new_value=0x%" PRIx64 "\n",
+        elf->read_reg(offset + reg_offset));
 
       delete elf;
       return 0;

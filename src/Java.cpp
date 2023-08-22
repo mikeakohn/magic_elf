@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <inttypes.h>
 
 #include "Java.h"
 
@@ -70,7 +71,7 @@ void Java::extract(const char *filename)
 
     if ((progress % 10000000) == 0)
     {
-      printf("%ldMB %ld\n", progress / 1024 / 1024, ftell(in));
+      printf("%" PRId64 "MB %ld\n", progress / 1024 / 1024, ftell(in));
     }
   }
 

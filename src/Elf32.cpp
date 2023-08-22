@@ -76,9 +76,9 @@ int Elf32::read_symbol(Symbol &symbol)
 void Elf32::print_program(Program &program)
 {
   printf("  p_type: %d (%s)\n", program.p_type, program.get_header_type());
-  printf("p_offset: 0x%lx\n", program.p_offset);
-  printf(" p_vaddr: 0x%lx\n", program.p_vaddr);
-  printf(" p_paddr: 0x%lx\n", program.p_paddr);
+  printf("p_offset: 0x%" PRIx64 "\n", program.p_offset);
+  printf(" p_vaddr: 0x%" PRIx64 "\n", program.p_vaddr);
+  printf(" p_paddr: 0x%" PRIx64 "\n", program.p_paddr);
   printf("p_filesz: %" PRId64 "\n", program.p_filesz);
   printf(" p_memsz: %" PRId64 "\n", program.p_memsz);
   printf(" p_flags: %d %s%s%s\n", program.p_flags, program.get_flags_type(),

@@ -235,9 +235,11 @@ void Elf::print_header()
   printf("     e_type: %02x %s\n", header.e_type, header.get_type_type());
   printf("  e_machine: 0x%x %s\n", header.e_machine, header.get_machine_type());
   printf("  e_version: %d\n", header.e_version);
-  printf("    e_entry: 0x%lx (virt addr)\n", header.e_entry);
-  printf("    e_phoff: 0x%lx (program header table offset)\n", header.e_phoff);
-  printf("    e_shoff: 0x%lx (section header table offset)\n", header.e_shoff);
+  printf("    e_entry: 0x%" PRIx64 " (virt addr)\n", header.e_entry);
+  printf("    e_phoff: 0x%" PRIx64 " (program header table offset)\n",
+    header.e_phoff);
+  printf("    e_shoff: 0x%" PRIx64 " (section header table offset)\n",
+    header.e_shoff);
   printf("    e_flags: 0x%08x (processor specific flags)\n", header.e_flags);
   printf("   e_ehsize: 0x%08x (elf header size)\n", header.e_ehsize);
   printf("e_phentsize: %d (program header table size)\n", header.e_phentsize);
@@ -453,8 +455,8 @@ void Elf::print_core_prstatus()
   printf("                errno: %d\n", prstatus._errno);
   printf("               cursig: %d\n", prstatus.cursig);
 
-  printf("              sigpend: %ld\n", prstatus.sigpend);
-  printf("              sighold: %ld\n", prstatus.sighold);
+  printf("              sigpend: %" PRId64 "\n", prstatus.sigpend);
+  printf("              sighold: %" PRId64 "\n", prstatus.sighold);
 
   printf("                  pid: %d\n", prstatus.pid);
   printf("                 ppid: %d\n", prstatus.ppid);
@@ -491,7 +493,7 @@ void Elf::print_core_prpsinfo()
   printf("             nice: %d\n", read_int8());
   // FIXME - only 64 bit?
   file_ptr += 4;
-  printf("             flag: %ld\n", read_offset());
+  printf("             flag: %" PRId64 "\n", read_offset());
   //printf("             flag: %d\n", read_int32());
   printf("              uid: %d\n", read_int32());
   printf("              gid: %d\n", read_int32());
@@ -565,8 +567,10 @@ void Elf::print_symbol(Symbol &symbol, uint64_t string_table_offset)
     symbol.get_symbol_type());
   printf("    other: %d\n", symbol.st_other);
   printf("    shndx: %d\n", symbol.st_shndx);
-  printf("    value: %ld (0x%lx)\n", symbol.st_value, symbol.st_value);
-  printf("     size: %ld\n", symbol.st_size);
+  printf("    value: %" PRId64 " (0x%" PRIx64 ")\n",
+    symbol.st_value,
+    symbol.st_value);
+  printf("     size: %" PRId64 "\n", symbol.st_size);
 }
 
 void Elf::print_section_data(Section &section, std::string &name)
