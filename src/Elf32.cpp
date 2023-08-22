@@ -96,7 +96,7 @@ void Elf32::print_core_mapped_files(int desccz)
   int n;
 
   printf("            count: %ld\n", count);
-  printf("        page size: %ld\n", read_offset());
+  printf("        page size: %" PRId64 "\n", read_offset());
 
   printf("            Page Offset   Start    End\n");
   filename += 4 * 2 + (count * 4 * 3);
