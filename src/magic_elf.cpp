@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
   printf(
     "\nmagic_elf - Copyright 2009-2023 by Michael Kohn <mike@mikekohn.net>\n"
     "https://www.mikekohn.net/\n"
-    "Version: August 20, 2023\n\n");
+    "Version: November 5, 2023\n\n");
 
   if (argc < 2)
   {

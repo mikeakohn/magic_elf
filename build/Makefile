@@ -22,14 +22,6 @@ OBJECTS= \
   Section.o \
   Symbol.o
 
-IGNORE= \
-  magic_elf_lib.o \
-  modify.o \
-  print_core.o \
-  print_elf_header.o \
-  print_program_headers.o \
-  print_section_headers.o
-
 default: $(OBJECTS)
 	$(CXX) -o ../magic_elf ../src/magic_elf.cpp $(OBJECTS) \
 	   $(CFLAGS) $(LDFLAGS)

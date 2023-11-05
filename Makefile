@@ -3,7 +3,7 @@ default:
 	@+make -C build
 
 lib: $(OBJECTS)
-	$(CC) -o libmagicl_elf.so magic_elf_lib.o magic_elf_io.o -shared -fPIC $(CFLAGS)
+	$(CC) -o libmagic_elf.so magic_elf_lib.o magic_elf_io.o -shared -fPIC $(CFLAGS)
 
 test_so:
 	$(CC) -o test.so test.c -shared -fPIC $(CFLAGS)

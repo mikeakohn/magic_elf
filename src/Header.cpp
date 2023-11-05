@@ -172,6 +172,7 @@ const char *Header::get_machine_type()
     case 186:  return "(STM8)";
     case 204:  return "(PIC)";
     case 220:  return "(Z80)";
+    case 243:  return "(RISC-V)";
     case 247:  return "(eBPF)";
     case 4643: return "(Epiphany)";
     default:   return "(Unknown)";
