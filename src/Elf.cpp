@@ -899,7 +899,7 @@ Elf *Elf::create_instance(int ei_class, int e_machine)
     switch (e_machine)
     {
       case EM_X86_64: return new ElfX86_64();
-      default:        return new Elf32();
+      default:        return new Elf64();
     }
   }
 }
