@@ -2,7 +2,7 @@
 
   magic_elf - The ELF file format analyzer.
 
-  Copyright 2009-2023 - Michael Kohn (mike@mikekohn.net)
+  Copyright 2009-2024 - Michael Kohn (mike@mikekohn.net)
   https://www.mikekohn.net/
 
   This program falls under the BSD license.
@@ -169,6 +169,7 @@ const char *Header::get_machine_type()
     case 109:  return "(Arca RISC)";
     case 110:  return "(PKU-Unity)";
     case 165:  return "(8051)";
+    case 183:  return "(aarch64 / ARM64)";
     case 186:  return "(STM8)";
     case 204:  return "(PIC)";
     case 220:  return "(Z80)";
